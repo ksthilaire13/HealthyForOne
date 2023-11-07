@@ -1,2 +1,1 @@
-from app import app, db
-from app.models import *
+from app import app
