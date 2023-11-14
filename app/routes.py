@@ -1,5 +1,6 @@
 from app import app
 from flask import render_template
+from app.forms import LoginForm
 from flask_login import login_user, logout_user, current_user, login_required
 
 @app.route('/')
@@ -11,4 +12,5 @@ def main():
 @app.route('/')
 @app.route('/login')
 def login():
-    return render_template('login.html')
+    form = LoginForm()
+    return render_template('login.html',form=form)
