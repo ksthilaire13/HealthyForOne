@@ -3,6 +3,7 @@ from app import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
+
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
@@ -38,21 +39,21 @@ class Run(db.Model):
     date = db.Column(db.String(32), index=True)
     weather = db.Column(db.String(32), index=True)
     notes = db.Column(db.String(200), index=True)
-    user_id = db.Column(db.Integer, foreign_key=True)
+    user_id = db.relationship('User', backref='user_id', lazy='dynamic')
 
     def __repr__(self):
         return '<Run: ({}) {}>'.format(self.run_id, self.date)
 
 
-class Venue(db.Model):
-    venue_id = db.Column(db.Integer, primary_key=True)
-    venue_name = db.Column(db.String(64), index=True, unique=True)
-    venue_address = db.Column(db.String(64), index=True)
-    venue_city = db.Column(db.String(64), index=True)
-    venue_state = db.Column(db.String(2), index=True)
-    venue_description = db.Column(db.String(128), index=True)
-    max_capacity = db.Column(db.Integer, index=True)
-    events = db.relationship('Event', backref='venue', lazy='dynamic')
+class Sleep(db.Model):
+    sleep_id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.String(32), index=True)
+    bedtime = db.Column(db.String(32), index=True)
+    wake_up = db.Column(db.String(32), index=True)
+    times_awoken = db.Column(db.Integer)
+    dreams_torf = db.Column(db.String(1), index=True)
+    sleep_notes = db.Column(db.String(300), index=True)
+    user_id = db.relationship('User', backref='user_id', lazy='dynamic')
 
     def __repr__(self):
-        return '<Venue: ({}) {}>'.format(self.venue_id,self.venue_name)
+        return '<Sleep: ({}) {}>'.format(self.sleep_id, self.date)
