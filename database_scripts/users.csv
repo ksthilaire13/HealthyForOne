@@ -1,0 +1,11 @@
+user_id,username,email,password,name,bio,photo,date_registered
+1000,runs4lyfe,runnerboy1@email.com,runs,Aaron Burns,a bio for the user Aaron,cat.jpeg,10/15/2021 19:16:00
+1001,runnerboy2000,runnerboy2@email.com,runs,Cole Lofty,a bio for the user Cole,cat.jpeg,8/30/2022 9:16:00
+1002,BoltLover29,runnerboy3@email.com,runs,Kyle Jacks,a bio for the user Kyle,cat.jpeg,11/5/2021 13:27:00
+1003,runner420,runnerboy4@email.com,runs,Troy Brown,a bio for the user Troy,cat.jpeg,6/11/2020 0:54:00
+1004,theman1,runnerboy5@email.com,runs,William Wilson,a bio for the user William,cat.jpeg,2/1/2021 7:33:00
+1005,LoveTheRun,runnergirl1@email.com,runs,Alice Rune,a bio for the user Alice,cat.jpeg,10/31/2022 10:44:00
+1006,XCgurl,runnergirl2@email.com,runs,Rey Janes,a bio for the user Rey,cat.jpeg,9/1/2021 16:59:00
+1007,TracknFields,runnergirl3@email.com,runs,Evelyn Bloomburg,a bio for the user Evelyn,cat.jpeg,7/13/2022 20:00:00
+1008,runner02,runnergirl4@email.com,runs,Noelle Jenkins,a bio for the user Noelle,cat.jpeg,5/17/2021 7:15:00
+1009,marathonwomen,runnergirl5@email.com,runs,Claire Secrets,a bio for the user Claire,cat.jpeg,12/29/2021 10:30:00
