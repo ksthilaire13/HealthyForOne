@@ -20,8 +20,8 @@ def reset_data():
             user = User(
                 id=row['user_id'],
                 username=row['username'],
-                user_email=row['user_email'],
-                password_hash=generate_password_hash(row['user_password']),
+                user_email=row['email'],
+                password_hash=generate_password_hash(row['password']),
                 name=row['name'],
                 bio=row['bio'],
                 photo=row['photo'],
