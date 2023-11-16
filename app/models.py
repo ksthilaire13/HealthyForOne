@@ -39,7 +39,7 @@ class Run(db.Model):
     date = db.Column(db.String(32), index=True)
     weather = db.Column(db.String(32), index=True)
     notes = db.Column(db.String(200), index=True)
-    user_id = db.relationship('User', backref='user_id', lazy='dynamic')
+    user_id = db.relationship('User', backref='id', lazy='dynamic')
 
     def __repr__(self):
         return '<Run: ({}) {}>'.format(self.run_id, self.date)
