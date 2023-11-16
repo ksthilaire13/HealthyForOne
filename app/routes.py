@@ -3,6 +3,7 @@ from flask import render_template, redirect, url_for, flash, request
 from app.forms import LoginForm, RegistrationForm
 from flask_login import login_user, logout_user, current_user, login_required
 from app.models import User
+from app.reset import reset_data
 
 
 @app.route('/')
@@ -46,3 +47,10 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for('main'))
+
+@app.route('/reset_db')
+def reset_db():
+    flash("Resetting database: deleting old data and repopulating with dummy data")
+    # clear all data from all tables - in a separate file...
+    reset_data()
+    return redirect('/')
