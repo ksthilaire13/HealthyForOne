@@ -1,4 +1,4 @@
-create table users
+create table user
 (
     user_id      integer not null
         constraint user_pk
