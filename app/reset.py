@@ -20,22 +20,22 @@ def reset_data():
             user = User(
                 id=row['user_id'],
                 username=row['username'],
-                user_email=row['email'],
-                password_hash=generate_password_hash(row['password']),
+                email=row['user_email'],
+                password_hash=generate_password_hash(row['user_password']),
                 name=row['name'],
                 bio=row['bio'],
                 photo=row['photo'],
-                date_registered =['date_registered'])
+                date_registered=['date_registered'])
             db.session.add(user)
             db.session.commit()
 
-    ## Reload Artists
+    ## Reload Sleep
     with open('database_scripts\\sleep.csv', 'r') as file:
         csv_reader = csv.DictReader(file)
         for row in csv_reader:
             print(row)  # used for confirmation
             sleep = Sleep(
-                sleep_id=row['sleep_id'],
+                id=row['sleep_id'],
                 date=row['date'],
                 bedtime=row['bedtime'],
                 wake_up=row['wake_up'],
@@ -46,18 +46,21 @@ def reset_data():
             db.session.add(sleep)
             db.session.commit()
 
-    ## Reload Venues
+    ## Reload Runs
     with open('database_scripts\\runs.csv', 'r') as file:
         csv_reader = csv.DictReader(file)
         for row in csv_reader:
             print(row)  # used for confirmation
             run = Run(
-                venue_id=row['venue_id'],
-                venue_name=row['venue_name'],
-                venue_address=row['venue_address'],
-                venue_city=row['venue_city'],
-                venue_state=row['venue_state'],
-                venue_description=row['venue_description'],
-                max_capacity=row['max_capacity'])
+                id=row['run_id'],
+                distance=row['distance'],
+                duration=row['duration'],
+                effort=row['effort'],
+                temp=row['temp'],
+                time_of_day=row['time_of_day'],
+                date=row['date'],
+                weather=row['weather'],
+                notes=row['notes'],
+                user_id=row['user_id'])
             db.session.add(run)
             db.session.commit()
