@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+  <object-set>
+    <table path="main.run">
+      <table path="main.user" name="user_id" from="" to=""/>
+    </table>
+    <table path="main.user">
+      <table path="main.user" name="user_id" from="id" to="id"/>
+    </table>
+  </object-set>
+</data>
