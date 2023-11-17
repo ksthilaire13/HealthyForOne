@@ -44,7 +44,7 @@ class Run(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
-        return '<Run: ({}) {}>'.format(self.run_id, self.date)
+        return '<Run: ({}) {}>'.format(self.id, self.date)
 
 
 class Sleep(db.Model):
@@ -58,4 +58,4 @@ class Sleep(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
-        return '<Sleep: ({}) {}>'.format(self.sleep_id, self.date)
+        return '<Sleep: ({}) {}>'.format(self.id, self.date)
