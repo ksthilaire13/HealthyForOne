@@ -10,7 +10,7 @@ def load_user(id):
 
 
 class User(UserMixin, db.Model):
-    user_id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(64), index=True, unique=True)
     password_hash = db.Column(db.String(128))
@@ -18,6 +18,8 @@ class User(UserMixin, db.Model):
     bio = db.Column(db.String(400))
     photo = db.Column(db.String(32))
     date_registered = db.Column(db.String(32))
+    runs = db.relationship("Run", backref="user", lazy="dynamic")
+    sleeps = db.relationship("Sleep", backref="user", lazy="dynamic")
 
     def __repr__(self):
         return '<User: {}>'.format(self.username)
@@ -30,7 +32,7 @@ class User(UserMixin, db.Model):
 
 
 class Run(db.Model):
-    run_id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     distance = db.Column(db.Integer, index=True)
     duration = db.Column(db.String(64), index=True)
     effort = db.Column(db.Integer, index=True)
@@ -39,21 +41,21 @@ class Run(db.Model):
     date = db.Column(db.String(32), index=True)
     weather = db.Column(db.String(32), index=True)
     notes = db.Column(db.String(200), index=True)
-    user_id = db.relationship('User', backref='user_id', lazy='dynamic')
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
         return '<Run: ({}) {}>'.format(self.run_id, self.date)
 
 
 class Sleep(db.Model):
-    sleep_id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.String(32), index=True)
     bedtime = db.Column(db.String(32), index=True)
     wake_up = db.Column(db.String(32), index=True)
     times_awoken = db.Column(db.Integer)
     dreams_torf = db.Column(db.String(1), index=True)
     sleep_notes = db.Column(db.String(300), index=True)
-    user_id = db.relationship('User', backref='user_id', lazy='dynamic')
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
         return '<Sleep: ({}) {}>'.format(self.sleep_id, self.date)
