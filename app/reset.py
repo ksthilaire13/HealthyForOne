@@ -20,12 +20,12 @@ def reset_data():
             user = User(
                 id=row['user_id'],
                 username=row['username'],
-                email=row['user_email'],
-                password_hash=generate_password_hash(row['user_password']),
+                email=row['email'],
+                password_hash=generate_password_hash(row['password']),
                 name=row['name'],
                 bio=row['bio'],
                 photo=row['photo'],
-                date_registered=['date_registered'])
+                date_registered=row['date_registered'])
             db.session.add(user)
             db.session.commit()
 
@@ -60,7 +60,7 @@ def reset_data():
                 time_of_day=row['time_of_day'],
                 date=row['date'],
                 weather=row['weather'],
-                notes=row['notes'],
+                notes=row['run_notes'],
                 user_id=row['user_id'])
             db.session.add(run)
             db.session.commit()
