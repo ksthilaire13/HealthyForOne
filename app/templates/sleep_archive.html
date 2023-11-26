@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
     {% block app_content %}
-        <h1>
-        Sleep Archive
-        </h1>
-        <p>This is going to be the sleep archive</p>
-
-    {% endblock %}
+    <h2>List of User Sleeps</h2>
+    {% for sleep in sleeps %}
+        <div><a href="{{ url_for('sleep_display', sleep_id = sleep.id) }}">{{ "Date:", sleep.date, "Wake Up Time:", sleep.wake_up, "Bedtime:", sleep.bedtime}}</a></div>
+        <br>
+    {% endfor %}
+    {% if sleeps_count < 1 %}
+        <h3>Sorry! there is no sleeps for this user...</h3>
+    {% endif %}
+{% endblock %}
