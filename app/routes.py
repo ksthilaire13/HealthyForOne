@@ -66,6 +66,7 @@ def reset_db():
 @app.route('/runs_archive')
 def runs_archive():
     runs = Run.query.all()
+    # runs = Run.query.filter_by(user_id=current_user.id).first_or_404()
     return render_template('runs_archive.html', title='Runs Archive', runs=runs)
 
 
@@ -80,3 +81,9 @@ def day_display():
     runs = Run.query.all()
     sleeps = Sleep.query.all()
     return render_template('day_display.html', title='Day Display', run=runs, sleep=sleeps)
+
+
+@app.route('/run_display/<run_id>')
+def run_display(run_id):
+    run = Run.query.filter_by(id=run_id).first_or_404()
+    return render_template('run_display.html', title='Run Display', run=run)

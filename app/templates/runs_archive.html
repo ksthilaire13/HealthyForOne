@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
-    {% block app_content %}
-        <h1>
-        Runs Archive
-        </h1>
-        <p>This is going to be the runs archive</p>
 
-    {% endblock %}
+{% block app_content %}
+    <h2>List of User Runs</h2>
+    {% for run in runs %}
+        <div><a href="{{ url_for('run_display', run_id = run.id) }}">{{ run.date, run.duration, run.distance }}</a></div>
+        <br>
+    {% endfor %}
+{% endblock %}
