@@ -61,3 +61,22 @@ def reset_db():
     # clear all data from all tables - in a separate file...
     reset_data()
     return redirect('/')
+
+
+@app.route('/runs_archive')
+def runs_archive():
+    runs = Run.query.all()
+    return render_template('runs_archive.html', title='Runs Archive', runs=runs)
+
+
+@app.route('/sleep_archive')
+def sleep_archive():
+    sleeps = Sleep.query.all()
+    return render_template('sleep_archive.html', title='Sleep Archive', sleeps=sleeps)
+
+
+@app.route('/day_display')
+def day_display():
+    runs = Run.query.all()
+    sleeps = Sleep.query.all()
+    return render_template('day_display.html', title='Day Display', run=runs, sleep=sleeps)
