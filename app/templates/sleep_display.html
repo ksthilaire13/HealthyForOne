@@ -1,9 +1,13 @@
 {% extends "base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
     {% block app_content %}
-        <h1>
-        Sleep Display
-        </h1>
-        <p>This is going to be the sleep display</p>
-
+        <h1>Sleep Score: {{ score }}</h1>
+        <h2>{{ sleep.date }}</h2>
+        <h3> Woken Up: {{ sleep.times_awoken }}</h3>
+        <h3> Bedtime: {{ sleep.bedtime }}</h3>
+        <h3> Wake-up Time: {{ sleep.wake_up }}</h3>
+        <h3> Dreams?: {{ sleep.dreams_torf }}</h3>
+        <h3> Total Sleep: {{ duration }}</h3>
+        <p> Notes: {{ sleep.notes }}</p>
+        <h1>Run Recommendation: {{ rec }}</h1>
     {% endblock %}

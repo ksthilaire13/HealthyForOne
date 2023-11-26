@@ -8,6 +8,22 @@ def sleep_trend():
     pass
 
 
-def overall_grade():
-    # uses all the grades of the datapoint being evaluated to give an overall grade
+def avg_func():
+    # averages whatever datapoint you are trying to calculate (Distance, Score, Time(..?))
     pass
+
+
+def avg_pace():
+    # uses duration and time to create an average pace for the run
+    pass
+
+
+def rec():
+    # uses a database or some sort of library to recommend sleep or run
+    pass
+
+
+def sleep_duration():
+    # calculates duration with start time vs end time
+    pass
+
