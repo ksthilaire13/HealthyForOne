@@ -84,3 +84,22 @@ def compare(name,otherName):
     user = User.query.filter_by(name=name).first()
     user2 = User.query.filter_by(name=otherName).first()
     return render_template('compare.html',user=user,user2=user2)
+
+
+@app.route('/runs_archive')
+def runs_archive():
+    runs = Run.query.all()
+    return render_template('runs_archive.html', title='Runs Archive', runs=runs)
+
+
+@app.route('/sleep_archive')
+def sleep_archive():
+    sleeps = Sleep.query.all()
+    return render_template('sleep_archive.html', title='Sleep Archive', sleeps=sleeps)
+
+
+@app.route('/day_display')
+def day_display():
+    runs = Run.query.all()
+    sleeps = Sleep.query.all()
+    return render_template('day_display.html', title='Day Display', run=runs, sleep=sleeps)
