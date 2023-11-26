@@ -99,8 +99,9 @@ def runs_archive():
 def sleep_archive():
     if not current_user.is_authenticated:
         return redirect(url_for('main'))
-    sleeps = Sleep.query.all()
-    return render_template('sleep_archive.html', title='Sleep Archive', sleeps=sleeps)
+    sleeps = Sleep.query.filter_by(user_id=current_user.id)
+    sleeps_count = sleeps.count()
+    return render_template('sleep_archive.html', title='Sleep Archive', sleeps=sleeps, sleeps_count=sleeps_count)
 
 
 @app.route('/day_display')
@@ -118,3 +119,12 @@ def run_display(run_id):
         return redirect(url_for('main'))
     run = Run.query.filter_by(id=run_id).first_or_404()
     return render_template('run_display.html', title='Run Display', run=run)
+
+
+@app.route('/sleep_display/<sleep_id>')
+def sleep_display(sleep_id):
+    if not current_user.is_authenticated:
+        return redirect(url_for('main'))
+    sleep = Sleep.query.filter_by(id=sleep_id).first_or_404()
+    return render_template('sleep_display.html', title='Sleep Display', sleep=sleep)
+
