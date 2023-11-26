@@ -41,7 +41,7 @@ def reset_data():
                 wake_up=row['wake_up'],
                 times_awoken=row['times_awoken'],
                 dreams_torf=row['dreams_torf'],
-                sleep_notes=row['sleep_notes'],
+                notes=row['sleep_notes'],
                 user_id=row['user_id'])
             db.session.add(sleep)
             db.session.commit()

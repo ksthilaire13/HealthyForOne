@@ -54,7 +54,7 @@ class Sleep(db.Model):
     wake_up = db.Column(db.String(32), index=True)
     times_awoken = db.Column(db.Integer)
     dreams_torf = db.Column(db.String(1), index=True)
-    sleep_notes = db.Column(db.String(300), index=True)
+    notes = db.Column(db.String(300), index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
