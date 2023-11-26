@@ -65,19 +65,25 @@ def reset_db():
 
 @app.route('/runs_archive')
 def runs_archive():
-    runs = Run.query.all()
-    # runs = Run.query.filter_by(user_id=current_user.id).first_or_404()
-    return render_template('runs_archive.html', title='Runs Archive', runs=runs)
+    if not current_user.is_authenticated:
+        return redirect(url_for('main'))
+    runs = Run.query.filter_by(user_id=current_user.id)
+    runs_count = runs.count()
+    return render_template('runs_archive.html', title='Runs Archive', runs=runs, runs_count=runs_count)
 
 
 @app.route('/sleep_archive')
 def sleep_archive():
+    if not current_user.is_authenticated:
+        return redirect(url_for('main'))
     sleeps = Sleep.query.all()
     return render_template('sleep_archive.html', title='Sleep Archive', sleeps=sleeps)
 
 
 @app.route('/day_display')
 def day_display():
+    if not current_user.is_authenticated:
+        return redirect(url_for('main'))
     runs = Run.query.all()
     sleeps = Sleep.query.all()
     return render_template('day_display.html', title='Day Display', run=runs, sleep=sleeps)
@@ -85,5 +91,7 @@ def day_display():
 
 @app.route('/run_display/<run_id>')
 def run_display(run_id):
+    if not current_user.is_authenticated:
+        return redirect(url_for('main'))
     run = Run.query.filter_by(id=run_id).first_or_404()
     return render_template('run_display.html', title='Run Display', run=run)
