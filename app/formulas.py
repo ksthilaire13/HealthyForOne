@@ -1,11 +1,11 @@
-def run_trend():
+def run_trend(run):
     # uses past 2 runs to grade the trend of the run being evaluated
-    pass
+    return 100
 
 
-def sleep_trend():
+def sleep_trend(sleep):
     # uses past 2 sleeps to grade the trend of the sleep being evaluated
-    pass
+    return 100
 
 
 def avg_func():
@@ -13,17 +13,21 @@ def avg_func():
     pass
 
 
-def avg_pace():
+def avg_pace(duration, time):
     # uses duration and time to create an average pace for the run
-    pass
+    return "7:00 min/mi"
 
 
-def rec():
+def item_suggest(item):
+    if item.id > 3000:
+        type = "sleep"
+    else:
+        type = "run"
     # uses a database or some sort of library to recommend sleep or run
-    pass
+    return "A Suggestion will be here!"
 
 
-def sleep_duration():
+def sleep_duration(bedtime, wake_up):
     # calculates duration with start time vs end time
-    pass
+    return "8 hours!"
 
