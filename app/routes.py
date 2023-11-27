@@ -54,3 +54,26 @@ def reset_db():
     # clear all data from all tables - in a separate file...
     reset_data()
     return redirect('/')
+
+@app.route('/info_page/<name>')
+@login_required
+def inform(name):
+    user = User.query.filter_by(name=name).first()
+    return render_template('userInfo.html',user=user)
+
+@app.route('/register_run')
+@login_required
+def register_run():
+    return render_template('register_run.html')
+
+@app.route('/register_sleep')
+@login_required
+def register_sleep():
+    return render_template('register_sleep.html')
+
+@app.route('/compare/<name>To<otherName>')
+@login_required
+def compare(name,otherName):
+    user = User.query.filter_by(name=name).first()
+    user2 = User.query.filter_by(name=otherName).first()
+    return render_template('compare.html',user=user,user2=user2)
