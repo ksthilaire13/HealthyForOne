@@ -17,7 +17,7 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(64))
     bio = db.Column(db.String(400))
     photo = db.Column(db.String(32))
-    date_registered = db.Column(db.String(32))
+    date_registered = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     runs = db.relationship("Run", backref="user", lazy="dynamic")
     sleeps = db.relationship("Sleep", backref="user", lazy="dynamic")
 
@@ -34,11 +34,11 @@ class User(UserMixin, db.Model):
 class Run(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     distance = db.Column(db.Integer, index=True)
-    duration = db.Column(db.String(64), index=True)
+    duration = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     effort = db.Column(db.Integer, index=True)
     temp = db.Column(db.Integer, index=True)
-    time_of_day = db.Column(db.String(32), index=True)
-    date = db.Column(db.String(32), index=True)
+    time_of_day = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     weather = db.Column(db.String(32), index=True)
     notes = db.Column(db.String(200), index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -49,9 +49,9 @@ class Run(db.Model):
 
 class Sleep(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.String(32), index=True)
-    bedtime = db.Column(db.String(32), index=True)
-    wake_up = db.Column(db.String(32), index=True)
+    date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    bedtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    wake_up = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     times_awoken = db.Column(db.Integer)
     dreams_torf = db.Column(db.String(1), index=True)
     notes = db.Column(db.String(300), index=True)

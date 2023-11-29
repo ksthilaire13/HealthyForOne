@@ -1,3 +1,6 @@
+import datetime
+
+
 def run_trend(run):
     # uses past 2 runs to grade the trend of the run being evaluated
     return 100
@@ -18,7 +21,7 @@ def avg_pace(duration, time):
     return "7:00 min/mi"
 
 
-def item_suggest(item):
+def item_suggest(item, type):
     if item.id > 3000:
         type = "sleep"
     else:
