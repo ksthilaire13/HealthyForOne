@@ -1,7 +1,8 @@
-from datetime import datetime
+from datetime import datetime, time
 from app import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from sqlalchemy import Time
 
 
 @login.user_loader
@@ -34,11 +35,11 @@ class User(UserMixin, db.Model):
 class Run(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     distance = db.Column(db.Integer, index=True)
-    duration = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    duration = db.Column(db.Interval, index=True)
     effort = db.Column(db.Integer, index=True)
     temp = db.Column(db.Integer, index=True)
-    time_of_day = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    time_of_day = db.Column(db.Time, index=True, default=time.min)
+    date = db.Column(db.Date, index=True)
     weather = db.Column(db.String(32), index=True)
     notes = db.Column(db.String(200), index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
