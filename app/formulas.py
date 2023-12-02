@@ -10,16 +10,16 @@ def run_trend(run, user):
         Run.date < run.date).order_by(desc(Run.date)).limit(2).all()
     if len(recent_runs) >= 2:
         # calculate distance score
-        avg_distance = (run.distance + recent_runs[0].distance + recent_runs[1].distance)/3
-        if avg_distance < run.distance+5:
+        avg_distance = (run.distance + recent_runs[0].distance + recent_runs[1].distance) / 3
+        if avg_distance < run.distance + 5:
             distance_score = 100
         if avg_distance <= run.distance:
             distance_score = 80
-        if avg_distance < run.distance+2:
+        if avg_distance < run.distance + 2:
             distance_score = 70
         if avg_distance > run.distance:
             distance_score = 60
-        if avg_distance > run.distance+4:
+        if avg_distance > run.distance + 4:
             distance_score = 50
 
         # calculate pace score
@@ -30,10 +30,10 @@ def run_trend(run, user):
             pace_score = 100
 
         # calculate effort score
-        avg_effort = (run.effort + recent_runs[0].effort + recent_runs[1].effort)/3
-        effort_score = run.effort*5 + avg_effort*5
+        avg_effort = (run.effort + recent_runs[0].effort + recent_runs[1].effort) / 3
+        effort_score = run.effort * 5 + avg_effort * 5
 
-        overall_score = distance_score*0.2 + pace_score*0.2 + effort_score*0.6
+        overall_score = distance_score * 0.2 + pace_score * 0.2 + effort_score * 0.6
 
         return overall_score
     else:
@@ -48,15 +48,15 @@ def sleep_trend(sleep, user):
 
     if len(recent_sleeps) >= 2:
         # calculate time score
-        avg_sleep_time = (sleep_duration(sleep).total_seconds()/3600 +
-                          sleep_duration(recent_sleeps[0]).total_seconds()/3600 +
-                          sleep_duration(recent_sleeps[1]).total_seconds()/3600)/3
-        if sleep_duration(sleep).total_seconds()/3600 < 8:
-            sleep1 = (sleep_duration(sleep).total_seconds()/3600)*5
-        elif 8 <= sleep_duration(sleep).total_seconds()/3600 <= 10:
+        avg_sleep_time = (sleep_duration(sleep).total_seconds() / 3600 +
+                          sleep_duration(recent_sleeps[0]).total_seconds() / 3600 +
+                          sleep_duration(recent_sleeps[1]).total_seconds() / 3600) / 3
+        if sleep_duration(sleep).total_seconds() / 3600 < 8:
+            sleep1 = (sleep_duration(sleep).total_seconds() / 3600) * 5
+        elif 8 <= sleep_duration(sleep).total_seconds() / 3600 <= 10:
             sleep1 = 50
         elif sleep_duration(sleep).total_seconds() / 3600 > 10:
-            sleep1 = 50 - (sleep_duration(sleep).total_seconds()/3600)*5
+            sleep1 = 50 - (sleep_duration(sleep).total_seconds() / 3600) * 5
         else:
             sleep1 = 50
 
@@ -70,7 +70,6 @@ def sleep_trend(sleep, user):
             sleep2 = 50
 
         time_score = sleep1 + sleep2
-
 
         # calculate consis_score
         if sleep.times_awoken == 0:
@@ -88,7 +87,7 @@ def sleep_trend(sleep, user):
         else:
             dream_score = 50
 
-        overall_score = (time_score*0.75 + dream_score*0.1 + consis_score*0.15)
+        overall_score = (time_score * 0.75 + dream_score * 0.1 + consis_score * 0.15)
 
         return overall_score
     else:
@@ -97,7 +96,7 @@ def sleep_trend(sleep, user):
 
 def avg_pace(run):
     # uses duration and time to create an average pace for the run
-    a_pace = run.duration/run.distance
+    a_pace = run.duration / run.distance
     return a_pace
 
 
@@ -116,4 +115,3 @@ def sleep_duration(sleep):
 
     duration = sleep.wake_up - sleep.bedtime
     return duration
-
