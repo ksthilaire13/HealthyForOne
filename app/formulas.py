@@ -1,11 +1,18 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy import desc
 from app.models import Sleep, User, Run
 
 
-def run_trend(run):
+def run_trend(run, user):
     # uses past 2 runs to grade the trend of the run being evaluated
-    return 100
+    recent_runs = Run.query.filter(
+        Run.user_id == user.id,
+        Run.date < run.date).order_by(desc(Run.date)).limit(2).all()
+    if len(recent_runs) >= 2:
+        # write code here
+        return 100
+    else:
+        return "Cannot be calculated yet"
 
 
 def sleep_trend(sleep, user):
@@ -16,19 +23,29 @@ def sleep_trend(sleep, user):
 
     if len(recent_sleeps) >= 2:
         # calculate time score
-        avg_sleep_time = (sleep_duration(sleep) + sleep_duration(recent_sleeps[0]) + sleep_duration(recent_sleeps[1]))/3
-        if 7 < sleep_duration(sleep) < 10 and 7 < avg_sleep_time < 10:
-            time_score = 100
-        elif sleep_duration(sleep) < 3:
-            time_score = 20
-        elif sleep_duration(sleep) < 1:
-            time_score = 0
-        elif 7 < sleep_duration(sleep) < 10 and (7 > avg_sleep_time or avg_sleep_time > 10):
-            time_score = 80
-        elif (7 > sleep_duration(sleep) or sleep_duration(sleep) > 10) and 7 < avg_sleep_time < 10:
-            time_score = 60
-        elif (7 > sleep_duration(sleep) or sleep_duration(sleep) > 10) and (7 > avg_sleep_time or avg_sleep_time > 10):
-            time_score = 40
+        avg_sleep_time = (sleep_duration(sleep).total_seconds()/3600 +
+                          sleep_duration(recent_sleeps[0]).total_seconds()/3600 +
+                          sleep_duration(recent_sleeps[1]).total_seconds()/3600)/3
+        if sleep_duration(sleep).total_seconds()/3600 < 8:
+            sleep1 = (sleep_duration(sleep).total_seconds()/3600)*5
+        elif 8 <= sleep_duration(sleep).total_seconds()/3600 <= 10:
+            sleep1 = 50
+        elif sleep_duration(sleep).total_seconds() / 3600 > 10:
+            sleep1 = 50 - (sleep_duration(sleep).total_seconds()/3600)*5
+        else:
+            sleep1 = 50
+
+        if avg_sleep_time < 8:
+            sleep2 = avg_sleep_time * 5
+        elif 8 <= avg_sleep_time <= 10:
+            sleep2 = 50
+        elif avg_sleep_time > 10:
+            sleep2 = 50 - avg_sleep_time * 5
+        else:
+            sleep2 = 50
+
+        time_score = sleep1 + sleep2
+
 
         # calculate consis_score
         if sleep.times_awoken == 0:
@@ -46,7 +63,7 @@ def sleep_trend(sleep, user):
         else:
             dream_score = 50
 
-        overall_score = (time_score + time_score + time_score + dream_score + consis_score)/5
+        overall_score = (time_score*0.75 + dream_score*0.1 + consis_score*0.15)
 
         return overall_score
     else:
@@ -69,6 +86,9 @@ def item_suggest(item):
 
 def sleep_duration(sleep):
     # calculates duration with start time vs end time
+    if sleep.wake_up < sleep.bedtime:
+        sleep.wake_up += timedelta(days=1)
+
     duration = sleep.wake_up - sleep.bedtime
     return duration
 
