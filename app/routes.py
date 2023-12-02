@@ -66,7 +66,7 @@ def reset_db():
 @login_required
 def inform(name):
     user = User.query.filter_by(name=name).first()
-    return render_template('userInfo.html',user=user)
+    return render_template('userInfo.html', user=user)
 
 
 @app.route('/register_run')

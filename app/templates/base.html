@@ -13,7 +13,7 @@
             {% if current_user.is_anonymous %}
             <a href="{{ url_for('login') }}">Login</a>
             {% else %}
-{#            <a href="{{ url_for('day_display') }}">Day Display</a>#}
+            <a href="{{ url_for('day_display') }}">Day Display</a>
             <a href="{{ url_for('runs_archive') }}">Runs Archive</a>
             <a href="{{ url_for('sleep_archive') }}">Sleep Archive</a>
             <a href="{{ url_for('logout') }}">Logout</a>
