@@ -9,8 +9,33 @@ def run_trend(run, user):
         Run.user_id == user.id,
         Run.date < run.date).order_by(desc(Run.date)).limit(2).all()
     if len(recent_runs) >= 2:
-        # write code here
-        return 100
+        # calculate distance score
+        avg_distance = (run.distance + recent_runs[0].distance + recent_runs[1].distance)/3
+        if avg_distance < run.distance+5:
+            distance_score = 100
+        if avg_distance <= run.distance:
+            distance_score = 80
+        if avg_distance < run.distance+2:
+            distance_score = 70
+        if avg_distance > run.distance:
+            distance_score = 60
+        if avg_distance > run.distance+4:
+            distance_score = 50
+
+        # calculate pace score
+        pace_avg = avg_pace(run) + avg_pace(recent_runs[0]) + avg_pace(recent_runs[1])
+        if pace_avg > avg_pace(run):
+            pace_score = 70
+        if pace_avg <= avg_pace(run):
+            pace_score = 100
+
+        # calculate effort score
+        avg_effort = (run.effort + recent_runs[0].effort + recent_runs[1].effort)/3
+        effort_score = run.effort*5 + avg_effort*5
+
+        overall_score = distance_score*0.2 + pace_score*0.2 + effort_score*0.6
+
+        return overall_score
     else:
         return "Cannot be calculated yet"
 
