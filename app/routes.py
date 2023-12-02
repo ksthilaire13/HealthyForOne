@@ -4,7 +4,7 @@ from app.forms import LoginForm, RegistrationForm
 from flask_login import login_user, logout_user, current_user, login_required
 from app.models import User, Run, Sleep
 from app.reset import reset_data
-from app.formulas import run_trend, sleep_trend, avg_func, avg_pace, item_suggest, sleep_duration
+from app.formulas import run_trend, sleep_trend, avg_pace, item_suggest, sleep_duration
 
 
 @app.route('/')
@@ -121,8 +121,8 @@ def run_display(run_id):
     if not current_user.is_authenticated:
         return redirect(url_for('main'))
     run = Run.query.filter_by(id=run_id).first_or_404()
-    score = run_trend(run)
-    pace = avg_pace(run.duration, run.distance)
+    score = run_trend(run, current_user)
+    pace = avg_pace(run)
     suggestion = item_suggest(run)
     return render_template('run_display.html', title='Run Display', run=run, score=score,
                            pace=pace, suggestion=suggestion)
@@ -133,8 +133,8 @@ def sleep_display(sleep_id):
     if not current_user.is_authenticated:
         return redirect(url_for('main'))
     sleep = Sleep.query.filter_by(id=sleep_id).first_or_404()
-    score = sleep_trend(sleep)
-    duration = sleep_duration(sleep.bedtime, sleep.wake_up)
+    score = sleep_trend(sleep, current_user)
+    duration = sleep_duration(sleep)
     suggestion = item_suggest(sleep)
     return render_template('sleep_display.html', title='Sleep Display', sleep=sleep, score=score,
                            duration=duration, suggestion=suggestion)

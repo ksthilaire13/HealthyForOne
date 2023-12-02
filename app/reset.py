@@ -4,6 +4,7 @@ from app import db
 from app.models import User, Run, Sleep
 from datetime import datetime, time, timedelta
 
+
 def reset_data():
     # with app.app_context():  ## Causes this to run on startup
     # clear all data from all tables
@@ -14,7 +15,7 @@ def reset_data():
     db.session.commit()
 
     print("Made it to users")
-    ## Reload Users - needed for Foreign Keys
+    # Reload Users - needed for Foreign Keys
     with open('database_scripts\\users.csv', 'r') as file:
         csv_reader = csv.DictReader(file)
         for row in csv_reader:
@@ -32,7 +33,7 @@ def reset_data():
             db.session.commit()
 
     print("Made it to Sleep")
-    ## Reload Sleep
+    # Reload Sleep
     with open('database_scripts\\sleep.csv', 'r') as file:
         csv_reader = csv.DictReader(file)
         for row in csv_reader:
@@ -41,8 +42,8 @@ def reset_data():
             sleep = Sleep(
                 id=row['sleep_id'],
                 date=datetime.strptime(row['date'], "%m/%d/%Y"),
-                bedtime=datetime.strptime(row['bedtime'],"%I:%M %p"),
-                wake_up=datetime.strptime(row['wake_up'],"%I:%M %p"),
+                bedtime=datetime.strptime(row['bedtime'], "%I:%M %p"),
+                wake_up=datetime.strptime(row['wake_up'], "%I:%M %p"),
                 times_awoken=row['times_awoken'],
                 dreams_torf=row['dreams_torf'],
                 notes=row['sleep_notes'],
@@ -51,7 +52,7 @@ def reset_data():
             db.session.commit()
 
     print("Made it to runs")
-    ## Reload Runs
+    # Reload Runs
     with open('database_scripts\\runs.csv', 'r') as file:
         csv_reader = csv.DictReader(file)
         for row in csv_reader:
@@ -66,7 +67,7 @@ def reset_data():
                 duration=duration,
                 effort=row['effort'],
                 temp=row['temp'],
-                time_of_day=datetime.strptime(row['time_of_day'],"%I:%M %p").time(),
+                time_of_day=datetime.strptime(row['time_of_day'], "%I:%M %p").time(),
                 date=datetime.strptime(row['date'], "%m/%d/%Y"),
                 weather=row['weather'],
                 notes=row['run_notes'],
