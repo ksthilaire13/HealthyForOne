@@ -1,6 +1,8 @@
+from datetime import timedelta
+
 from app import app, db
 from flask import render_template, redirect, url_for, flash, request
-from app.forms import LoginForm, RegistrationForm
+from app.forms import LoginForm, RegistrationForm, SleepForm, RunForm
 from flask_login import login_user, logout_user, current_user, login_required
 from app.models import User, Run, Sleep
 from app.reset import reset_data
@@ -69,17 +71,46 @@ def inform(name):
     return render_template('userInfo.html', user=user)
 
 
-@app.route('/register_run')
+@app.route('/register_run', methods=['GET', 'POST'])
 @login_required
 def register_run():
-    return render_template('register_run.html')
+    form = RunForm()
+
+    if form.validate_on_submit():
+        run = Run(
+            date=form.date.data,
+            distance=form.distance.data,
+            duration=timedelta(hours=form.hours.data, minutes=form.minutes.data, seconds=form.seconds.data),
+            temperature=form.temperature.data,
+            time_of_day=form.time_of_day.data,
+            effort=form.effort.data,
+            weather=form.weather.data,
+            notes=form.notes.data,
+            user_id=current_user.id)
+        db.session.add(run)
+        db.session.commit()
+        flash('Run submitted successfully!')
+        return redirect(url_for('main'))
+    return render_template('registers/register_run.html', title='Submit Run', form=form)
 
 
 @app.route('/register_sleep')
 @login_required
 def register_sleep():
-    return render_template('register_sleep.html')
-
+    form = SleepForm()
+    if form.validate_on_submit():
+        sleep = Sleep(
+            bedtime=form.bedtime.data,
+            wake_up=form.wake_up.data,
+            times_awoken=form.times_awoken.data,
+            dreams_torf=form.dreams_torf.data,
+            notes=form.notes.data,
+            user_id=current_user.id)
+        db.session.add(sleep)
+        db.session.commit()
+        flash('Sleep submitted successfully!')
+        return redirect(url_for('main'))
+    return render_template('registers/register_sleep.html', title='Submit Sleep', form=form)
 
 @app.route('/compare/<name>To<otherName>')
 @login_required
