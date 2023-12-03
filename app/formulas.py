@@ -23,10 +23,10 @@ def run_trend(run, user):
             distance_score = 50
 
         # calculate pace score
-        pace_avg = avg_pace(run) + avg_pace(recent_runs[0]) + avg_pace(recent_runs[1])
-        if pace_avg > avg_pace(run):
+        pace_avg = run.pace() + recent_runs[0].pace() + recent_runs[1].pace()
+        if pace_avg > run.pace():
             pace_score = 70
-        if pace_avg <= avg_pace(run):
+        if pace_avg <= run.pace():
             pace_score = 100
 
         # calculate effort score
@@ -48,15 +48,15 @@ def sleep_trend(sleep, user):
 
     if len(recent_sleeps) >= 2:
         # calculate time score
-        avg_sleep_time = (sleep_duration(sleep).total_seconds() / 3600 +
-                          sleep_duration(recent_sleeps[0]).total_seconds() / 3600 +
-                          sleep_duration(recent_sleeps[1]).total_seconds() / 3600) / 3
-        if sleep_duration(sleep).total_seconds() / 3600 < 8:
-            sleep1 = (sleep_duration(sleep).total_seconds() / 3600) * 5
-        elif 8 <= sleep_duration(sleep).total_seconds() / 3600 <= 10:
+        avg_sleep_time = (sleep.duration().total_seconds() / 3600 +
+                          recent_sleeps[0].duration().total_seconds() / 3600 +
+                          recent_sleeps[1].duration().total_seconds() / 3600) / 3
+        if sleep.duration().total_seconds() / 3600 < 8:
+            sleep1 = (sleep.duration().total_seconds() / 3600) * 5
+        elif 8 <= sleep.duration().total_seconds() / 3600 <= 10:
             sleep1 = 50
-        elif sleep_duration(sleep).total_seconds() / 3600 > 10:
-            sleep1 = 50 - (sleep_duration(sleep).total_seconds() / 3600) * 5
+        elif sleep.duration().total_seconds() / 3600 > 10:
+            sleep1 = 50 - (sleep.duration().total_seconds() / 3600) * 5
         else:
             sleep1 = 50
 
@@ -117,23 +117,41 @@ def sleep_duration(sleep):
     return duration
 
 
-def avg_function(item_list, parameter):
-    # pace, sleep_score, run_score
-    total = sum_function(item_list, parameter)
-    average = total/len(item_list)
+def avg_function(item_list, parameter, current_user):
+    total = sum_function(item_list, parameter, current_user)
+    if parameter in ["sleep_score", "run_score"]:
+        average = total/(len(item_list)-2)
+    else:
+        average = total/len(item_list)
     return average
 
 
-def sum_function(item_list, parameter):
-    function_map = {"pace": avg_pace, "sleep_score": sleep_trend, "run_score": run_trend,
-                    "sleep_duration": sleep_duration}
-    total = 0
-    if parameter not in function_map:
+def sum_function(item_list, parameter, current_user):
+    if parameter in ["distance", "effort", "temp", "duration"]:
+        total = getattr(item_list[0], parameter, 0) - getattr(item_list[0], parameter, 0)
         for item in item_list:
-            total += item.parameter
+            total = total + getattr(item, parameter, 0)
+    elif parameter == "pace":
+        total = item_list[0].pace() - item_list[0].pace()
+        for item in item_list:
+            total = total + item.pace()
+    elif parameter == "sleep_duration":
+        total = item_list[0].duration() - item_list[0].duration()
+        for item in item_list:
+            total = total + item.duration()
+    elif parameter == "run_score":
+        total = 0
+        for item in item_list:
+            if run_trend(item, current_user) != "Cannot be calculated yet":
+                total = total + run_trend(item, current_user)
+    elif parameter == "sleep_score":
+        total = 0
+        for item in item_list:
+            if sleep_trend(item, current_user) != "Cannot be calculated yet":
+                total = total + sleep_trend(item, current_user)
     else:
-        for item in item_list:
-            total += function_map[parameter](item)
+        raise ValueError(f"Unsupported parameter: {parameter}")
+
     return total
 
 

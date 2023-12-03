@@ -6,7 +6,7 @@ from app.forms import LoginForm, RegistrationForm, SleepForm, RunForm
 from flask_login import login_user, logout_user, current_user, login_required
 from app.models import User, Run, Sleep
 from app.reset import reset_data
-from app.formulas import run_trend, sleep_trend, avg_pace, item_suggest, sleep_duration, sum_function, avg_function
+from app.formulas import run_trend, sleep_trend, item_suggest, sum_function, avg_function
 
 
 @app.route('/')
@@ -177,7 +177,7 @@ def run_display(run_id):
         return redirect(url_for('main'))
     run = Run.query.filter_by(id=run_id).first_or_404()
     score = run_trend(run, current_user)
-    pace = avg_pace(run)
+    pace = run.pace()
     suggestion = item_suggest(run)
     return render_template('run_display.html', title='Run Display', run=run, score=score,
                            pace=pace, suggestion=suggestion)
@@ -190,7 +190,7 @@ def sleep_display(sleep_id):
         return redirect(url_for('main'))
     sleep = Sleep.query.filter_by(id=sleep_id).first_or_404()
     score = sleep_trend(sleep, current_user)
-    duration = sleep_duration(sleep)
+    duration = sleep.duration()
     suggestion = item_suggest(sleep)
     return render_template('sleep_display.html', title='Sleep Display', sleep=sleep, score=score,
                            duration=duration, suggestion=suggestion)
@@ -200,19 +200,21 @@ def sleep_display(sleep_id):
 @login_required
 def user_info():
     user_runs = Run.query.filter_by(user_id=current_user.id).all()
+    print(f"Current User ID: {current_user.id}")
     user_sleeps = Sleep.query.filter_by(user_id=current_user.id).all()
+    print(f"User Sleeps: {user_sleeps}")
     username = current_user.username
     email = current_user.email
     name = current_user.name
     date_registered = current_user.date_registered
     bio = current_user.bio
 
-    total_miles = sum_function(user_runs, "distance")
-    total_time = sum_function(user_runs, "duration")
-    overall_avg_pace = avg_pace(user_runs, "pace")
-    total_sleep_time = sum_function(user_sleeps, "sleep_duration")
-    sum_run_score = sum_function(user_runs, "run_score")
-    sum_sleep_score = sum_function(user_sleeps, "sleep_score")
+    total_miles = sum_function(user_runs, "distance", current_user)
+    total_time = sum_function(user_runs, "duration", current_user)
+    overall_avg_pace = avg_function(user_runs, "pace", current_user)
+    total_sleep_time = sum_function(user_sleeps, "sleep_duration", current_user)
+    sum_run_score = sum_function(user_runs, "run_score", current_user)
+    sum_sleep_score = sum_function(user_sleeps, "sleep_score", current_user)
     print(total_miles)
     print(total_time)
     print(overall_avg_pace)

@@ -1,4 +1,4 @@
-from datetime import datetime, time
+from datetime import datetime, time, timedelta, date
 from app import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -39,7 +39,7 @@ class Run(db.Model):
     effort = db.Column(db.Integer, index=True)
     temp = db.Column(db.Integer, index=True)
     time_of_day = db.Column(db.Time, index=True, default=time.min)
-    date = db.Column(db.Date, index=True)
+    date = db.Column(db.Date, index=True, default=date.today)
     weather = db.Column(db.String(32), index=True)
     notes = db.Column(db.String(200), index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -47,10 +47,15 @@ class Run(db.Model):
     def __repr__(self):
         return '<Run: ({}) {}>'.format(self.id, self.date)
 
+    def pace(self):
+        if self.duration and self.distance:
+            return self.duration.total_seconds() / 60 / self.distance
+        return 0
+
 
 class Sleep(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date, index=True, default=datetime.utcnow)
+    date = db.Column(db.Date, index=True, default=date.today)
     bedtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     wake_up = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     times_awoken = db.Column(db.Integer)
@@ -60,3 +65,8 @@ class Sleep(db.Model):
 
     def __repr__(self):
         return '<Sleep: ({}) {}>'.format(self.id, self.date)
+
+    def duration(self):
+        if self.wake_up < self.bedtime:
+            self.wake_up += timedelta(days=1)
+        return self.wake_up - self.bedtime
