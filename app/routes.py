@@ -1,7 +1,5 @@
 from datetime import timedelta, datetime
-
 from sqlalchemy import func
-
 from app import app, db
 from flask import render_template, redirect, url_for, flash, request
 from app.forms import LoginForm, RegistrationForm, SleepForm, RunForm
