@@ -81,7 +81,7 @@ def register_run():
             date=form.date.data,
             distance=form.distance.data,
             duration=timedelta(hours=form.hours.data, minutes=form.minutes.data, seconds=form.seconds.data),
-            temperature=form.temperature.data,
+            temp=form.temperature.data,
             time_of_day=form.time_of_day.data,
             effort=form.effort.data,
             weather=form.weather.data,
