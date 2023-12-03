@@ -143,6 +143,7 @@ def compare(otherName):
 
 
 @app.route('/runs_archive')
+@login_required
 def runs_archive():
     if not current_user.is_authenticated:
         return redirect(url_for('main'))
@@ -152,6 +153,7 @@ def runs_archive():
 
 
 @app.route('/sleep_archive')
+@login_required
 def sleep_archive():
     if not current_user.is_authenticated:
         return redirect(url_for('main'))
@@ -161,6 +163,7 @@ def sleep_archive():
 
 
 @app.route('/day_display')
+@login_required
 def day_display():
     if not current_user.is_authenticated:
         return redirect(url_for('main'))
@@ -170,6 +173,7 @@ def day_display():
 
 
 @app.route('/run_display/<run_id>')
+@login_required
 def run_display(run_id):
     if not current_user.is_authenticated:
         return redirect(url_for('main'))
@@ -182,6 +186,7 @@ def run_display(run_id):
 
 
 @app.route('/sleep_display/<sleep_id>')
+@login_required
 def sleep_display(sleep_id):
     if not current_user.is_authenticated:
         return redirect(url_for('main'))
@@ -194,6 +199,7 @@ def sleep_display(sleep_id):
 
 
 @app.route('/user_info/<name>')
+@login_required
 def user_info(name):
     user = User.query.filter_by(name=name).first()
     return render_template('userInfo.html',user=user)
