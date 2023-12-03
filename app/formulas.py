@@ -33,7 +33,7 @@ def run_trend(run, user):
         avg_effort = (run.effort + recent_runs[0].effort + recent_runs[1].effort) / 3
         effort_score = run.effort * 5 + avg_effort * 5
 
-        overall_score = distance_score * 0.2 + pace_score * 0.2 + effort_score * 0.6
+        overall_score = distance_score * 0.4 + pace_score * 0.4 + effort_score * 0.2
 
         return overall_score
     else:
