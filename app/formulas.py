@@ -115,3 +115,25 @@ def sleep_duration(sleep):
 
     duration = sleep.wake_up - sleep.bedtime
     return duration
+
+
+def avg_function(item_list, parameter):
+    # pace, sleep_score, run_score
+    total = sum_function(item_list, parameter)
+    average = total/len(item_list)
+    return average
+
+
+def sum_function(item_list, parameter):
+    function_map = {"pace": avg_pace, "sleep_score": sleep_trend, "run_score": run_trend,
+                    "sleep_duration": sleep_duration}
+    total = 0
+    if parameter not in function_map:
+        for item in item_list:
+            total += item.parameter
+    else:
+        for item in item_list:
+            total += function_map[parameter](item)
+    return total
+
+

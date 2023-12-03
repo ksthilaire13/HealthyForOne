@@ -6,7 +6,7 @@ from app.forms import LoginForm, RegistrationForm, SleepForm, RunForm
 from flask_login import login_user, logout_user, current_user, login_required
 from app.models import User, Run, Sleep
 from app.reset import reset_data
-from app.formulas import run_trend, sleep_trend, avg_pace, item_suggest, sleep_duration
+from app.formulas import run_trend, sleep_trend, avg_pace, item_suggest, sleep_duration, sum_function, avg_function
 
 
 @app.route('/')
@@ -69,7 +69,7 @@ def reset_db():
 def inform(name):
     user = User.query.filter_by(name=name).first()
     # NEED CALCULATED FIELDS
-    return render_template('userInfo.html', user=user)
+    return render_template('user_info.html', user=user)
 
 
 @app.route('/register_run', methods=['GET', 'POST'])
@@ -196,8 +196,27 @@ def sleep_display(sleep_id):
                            duration=duration, suggestion=suggestion)
 
 
-@app.route('/user_info/<name>')
+@app.route('/user_info')
 @login_required
-def user_info(name):
-    user = User.query.filter_by(name=name).first()
-    return render_template('userInfo.html',user=user)
+def user_info():
+    user_runs = Run.query.filter_by(user_id=current_user.id).all()
+    user_sleeps = Sleep.query.filter_by(user_id=current_user.id).all()
+    username = current_user.username
+    email = current_user.email
+    name = current_user.name
+    date_registered = current_user.date_registered
+    bio = current_user.bio
+
+    total_miles = sum_function(user_runs, "distance")
+    total_time = sum_function(user_runs, "duration")
+    overall_avg_pace = avg_pace(user_runs, "pace")
+    total_sleep_time = sum_function(user_sleeps, "sleep_duration")
+    sum_run_score = sum_function(user_runs, "run_score")
+    sum_sleep_score = sum_function(user_sleeps, "sleep_score")
+    print(total_miles)
+    print(total_time)
+    print(overall_avg_pace)
+    print(total_sleep_time)
+    print(sum_run_score)
+    print(sum_sleep_score)
+    return render_template('user_info.html',user=current_user)
