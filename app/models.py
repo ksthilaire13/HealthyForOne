@@ -50,7 +50,7 @@ class Run(db.Model):
 
 class Sleep(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    date = db.Column(db.Date, index=True, default=datetime.utcnow)
     bedtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     wake_up = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     times_awoken = db.Column(db.Integer)

@@ -1,5 +1,7 @@
 from datetime import timedelta, datetime
 
+from sqlalchemy import func
+
 from app import app, db
 from flask import render_template, redirect, url_for, flash, request
 from app.forms import LoginForm, RegistrationForm, SleepForm, RunForm
@@ -109,6 +111,13 @@ def register_sleep():
         # Combine date and time to create datetime objects
         bedtime_datetime = datetime.combine(date_from_form, bedtime)
         wake_up_datetime = datetime.combine(date_from_form, wake_up)
+
+        existing_sleep = Sleep.query.filter(Sleep.user_id == current_user.id,
+                                            func.date(Sleep.date) == date_from_form).first()
+
+        if existing_sleep:
+            flash('Sleep data for this date already exists. Please choose a different date.')
+            return render_template('registers/register_sleep.html', title='Submit Sleep', form=form)
 
         sleep = Sleep(
             date=form.date.data,
