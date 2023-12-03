@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
-<p> <a href="{{ url_for('register_run') }}">Enter Run!</a></p>
-<p> <a href="{{ url_for('register_sleep') }}">Enter Sleep!</a></p>
-<p> <a href="{{ url_for('user_compare') }}">Compare Users!</a></p>
+{% block content %}
+    <p> <a href="{{ url_for('register_run') }}">Enter Run!</a></p>
+    <p> <a href="{{ url_for('register_sleep') }}">Enter Sleep!</a></p>
+    <p> <a href="{{ url_for('compare',otherName='SampleUser') }}">Compare Users!</a></p>
+    <p> <a href="{{ url_for('sleep_archive') }}">Sleep Archive</a></p>
+    <p> <a href="{{ url_for('runs_archive') }}">Run Archive</a></p>
+{% endblock %}

@@ -68,6 +68,7 @@ def reset_db():
 @login_required
 def inform(name):
     user = User.query.filter_by(name=name).first()
+    ## NEED CALCULATED FIELDS
     return render_template('userInfo.html', user=user)
 
 
@@ -112,11 +113,11 @@ def register_sleep():
         return redirect(url_for('main'))
     return render_template('registers/register_sleep.html', title='Submit Sleep', form=form)
 
-@app.route('/compare/<name>To<otherName>')
+@app.route('/compareTo/<otherName>')
 @login_required
-def compare(name, otherName):
-    user = User.query.filter_by(name=name).first()
-    user2 = User.query.filter_by(name=otherName).first()
+def compare(otherName):
+    user = current_user
+    user2 = User.query.filter_by(username=otherName).first()
     return render_template('compare.html',user=user,user2=user2)
 
 
@@ -170,3 +171,7 @@ def sleep_display(sleep_id):
     return render_template('sleep_display.html', title='Sleep Display', sleep=sleep, score=score,
                            duration=duration, suggestion=suggestion)
 
+@app.route('/user_info/<name>')
+def user_info(name):
+    user = User.query.filter_by(name=name).first()
+    return render_template('userInfo.html',user=user)
