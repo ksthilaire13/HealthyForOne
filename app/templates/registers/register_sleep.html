@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% import 'bootstrap/wtf.html' as wtf %}
+    {% block app_content %}
+           <h1>Submit Sleep</h1>
+           <form method="post" action="{{ url_for('register_sleep') }}">
+               {{ form.hidden_tag() }}
+               <div>{{ form.date.label }}: {{ form.date() }}</div>
+               <div> {{ form.bedtime.label }}: {{ form.bedtime() }}</div>
+               <div> {{ form.wake_up.label }}: {{ form.wake_up() }}</div>
+
+
+               <div>{{ form.distance.label }}: {{ form.distance() }}</div>
+               <div>{{ form.hours.label }}: {{ form.hours() }}  {{ form.minutes.label }}: {{ form.minutes() }}
+                     {{ form.seconds.label }}: {{ form.seconds() }}</div>
+               <div>{{ form.temperature.label }}: {{ form.temperature() }}</div>
+               <div> {{ form.bedtime.label }}: {{ form.bedtime() }}</div>
+               <div>{{ form.effort.label }}: {{ form.effort() }}</div>
+               <div>{{ form.weather.label }}: {{ form.weather() }}</div>
+               <div>{{ form.notes.label }}: {{ form.notes() }}</div>
+               <div>
+                   <button type="submit">Submit</button>
+               </div>
+           </form>
+    {% endblock %}
