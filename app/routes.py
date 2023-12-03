@@ -64,19 +64,12 @@ def reset_db():
     return redirect('/')
 
 
-@app.route('/info_page/<name>')
-@login_required
-def inform(name):
-    user = User.query.filter_by(name=name).first()
-    # NEED CALCULATED FIELDS
-    return render_template('user_info.html', user=user)
-
-
 @app.route('/register_run', methods=['GET', 'POST'])
 @login_required
 def register_run():
+    if not current_user.is_authenticated:
+        return redirect(url_for('main'))
     form = RunForm()
-
     if form.validate_on_submit():
         run = Run(
             date=form.date.data,
@@ -98,6 +91,8 @@ def register_run():
 @app.route('/register_sleep', methods=['GET', 'POST'])
 @login_required
 def register_sleep():
+    if not current_user.is_authenticated:
+        return redirect(url_for('main'))
     form = SleepForm()
     if form.validate_on_submit():
         date_from_form = form.date.data
@@ -135,6 +130,8 @@ def register_sleep():
 @app.route('/compareTo/<otherName>')
 @login_required
 def compare(otherName):
+    if not current_user.is_authenticated:
+        return redirect(url_for('main'))
     user = current_user
     user2 = User.query.filter_by(username=otherName).first()
     return render_template('compare.html', user=user, user2=user2)
@@ -165,9 +162,36 @@ def sleep_archive():
 def day_display():
     if not current_user.is_authenticated:
         return redirect(url_for('main'))
-    runs = Run.query.all()
-    sleeps = Sleep.query.all()
-    return render_template('day_display.html', title='Day Display', run=runs, sleep=sleeps)
+    today_date = datetime.today().date()
+    user_run = Run.query.filter_by(user_id=current_user.id, date=today_date).all()
+    user_sleeps = Sleep.query.filter_by(user_id=current_user.id, date=today_date).all()
+    num_sleeps = len(user_sleeps)
+    num_runs = len(user_run)
+    if num_runs > 0:
+        time = sum_function(user_run, "duration", current_user)
+        distance = sum_function(user_run, "distance", current_user)
+        avg_pace = avg_function(user_run, "pace", current_user)
+        effort = avg_function(user_run, "effort", current_user)
+        temp = avg_function(user_run, "temp", current_user)
+        time_of_day = sum_function(user_run, "time_of_day", current_user)
+        notes = sum_function(user_run, "notes", current_user)
+        score = avg_function(user_run, "run_score", current_user)
+    else:
+        time = None
+        distance = None
+        avg_pace = None
+        effort = None
+        temp = None
+        time_of_day = None
+        notes = None
+        score = None
+
+    user_sleep = user_sleeps[0] if num_sleeps > 0 else None
+
+    return render_template('day_display.html', title='Day Display', sleep=user_sleep, time=time,
+                           distance=distance, avg_pace=avg_pace, effort=effort, temp=temp, time_of_day=time_of_day,
+                           notes=notes, score=score, num_sleeps=num_sleeps, num_runs=num_runs, user=current_user,
+                           datetime=datetime, sleep_trend=sleep_trend)
 
 
 @app.route('/run_display/<run_id>')
@@ -199,6 +223,8 @@ def sleep_display(sleep_id):
 @app.route('/user_info')
 @login_required
 def user_info():
+    if not current_user.is_authenticated:
+        return redirect(url_for('main'))
     user_runs = Run.query.filter_by(user_id=current_user.id).all()
     user_sleeps = Sleep.query.filter_by(user_id=current_user.id).all()
     total_miles = sum_function(user_runs, "distance", current_user)

@@ -149,6 +149,12 @@ def sum_function(item_list, parameter, current_user):
         for item in item_list:
             if sleep_trend(item, current_user) != "Cannot be calculated yet":
                 total = total + sleep_trend(item, current_user)
+    elif parameter in ["time_of_day", "notes"]:
+        times = ""
+        for item in item_list:
+            if len(times) > 1:
+                times = times + "and"
+            times = times + item.time_of_day
     else:
         raise ValueError(f"Unsupported parameter: {parameter}")
 

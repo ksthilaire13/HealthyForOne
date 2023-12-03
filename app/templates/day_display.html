@@ -1,9 +1,30 @@
 {% extends "base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
     {% block app_content %}
-        <h1>
-        Day Display
-        </h1>
-        <p>This is going to be the day display</p>
-
+        <h1>{{ datetime.today().date() }}</h1>
+        <br>
+        {% if num_runs > 0 %}
+            <h2>Run Score: {{ score }}</h2>
+            <h2>Time: {{ time }}</h2>
+            <h2>Distance: {{ distance }}</h2>
+            <h2>Avg Pace: {{ avg_pace }}</h2>
+            <h2>Scored Effort: {{ effort }}</h2>
+            <h2>Temp: {{ temp }}</h2>
+            <h2>Time of Day: {{ time_of_day }}</h2>
+            <h2>Notes: {{ notes }}</h2>
+        {% else %}
+            <p>No run data available for today.</p>
+        {% endif %}
+        <br>
+        {% if num_sleeps > 0 %}
+            <h2>Sleep Score: {{ sleep_trend(user_sleep, user) }}</h2>
+            <h2>Total Time Asleep: {{ user_sleep.duration() }}</h2>
+            <h2>Bedtime: {{ user_sleep.bedtime }}</h2>
+            <h2>Wake Up: {{ user_sleep.wake_up }}</h2>
+            <h2>Any Dreams?: {{ user_sleep.dreams_torf }}</h2>
+            <h2>Woken Up?: {{ user_sleep.times_awoken }}</h2>
+            <h2>Notes: {{ user_sleep.notes }}</h2>
+        {% else %}
+            <p>No sleep data available for today.</p>
+        {% endif %}
     {% endblock %}
