@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from app import app, db
 from flask import render_template, redirect, url_for, flash, request
@@ -68,7 +68,7 @@ def reset_db():
 @login_required
 def inform(name):
     user = User.query.filter_by(name=name).first()
-    ## NEED CALCULATED FIELDS
+    # NEED CALCULATED FIELDS
     return render_template('userInfo.html', user=user)
 
 
@@ -95,14 +95,25 @@ def register_run():
     return render_template('registers/register_run.html', title='Submit Run', form=form)
 
 
-@app.route('/register_sleep')
+@app.route('/register_sleep', methods=['GET', 'POST'])
 @login_required
 def register_sleep():
     form = SleepForm()
     if form.validate_on_submit():
+        date_from_form = form.date.data
+
+        # Get time from the form
+        bedtime = form.bedtime.data
+        wake_up = form.wake_up.data
+
+        # Combine date and time to create datetime objects
+        bedtime_datetime = datetime.combine(date_from_form, bedtime)
+        wake_up_datetime = datetime.combine(date_from_form, wake_up)
+
         sleep = Sleep(
-            bedtime=form.bedtime.data,
-            wake_up=form.wake_up.data,
+            date=form.date.data,
+            bedtime=bedtime_datetime,
+            wake_up=wake_up_datetime,
             times_awoken=form.times_awoken.data,
             dreams_torf=form.dreams_torf.data,
             notes=form.notes.data,
@@ -113,12 +124,13 @@ def register_sleep():
         return redirect(url_for('main'))
     return render_template('registers/register_sleep.html', title='Submit Sleep', form=form)
 
+
 @app.route('/compareTo/<otherName>')
 @login_required
 def compare(otherName):
     user = current_user
     user2 = User.query.filter_by(username=otherName).first()
-    return render_template('compare.html',user=user,user2=user2)
+    return render_template('compare.html', user=user, user2=user2)
 
 
 @app.route('/runs_archive')
@@ -170,6 +182,7 @@ def sleep_display(sleep_id):
     suggestion = item_suggest(sleep)
     return render_template('sleep_display.html', title='Sleep Display', sleep=sleep, score=score,
                            duration=duration, suggestion=suggestion)
+
 
 @app.route('/user_info/<name>')
 def user_info(name):

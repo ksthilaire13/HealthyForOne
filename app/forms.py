@@ -47,8 +47,9 @@ class RunForm(FlaskForm):
 
 
 class SleepForm(FlaskForm):
-    bedtime = DateTimeField('Bedtime', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
-    wake_up = DateTimeField('Wake Up Time', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
+    date = DateField('Date', validators=[DataRequired()], format='%Y-%m-%d')
+    bedtime = TimeField('Bedtime', validators=[DataRequired()])
+    wake_up = TimeField('Wake Up Time', validators=[DataRequired()])
     times_awoken = IntegerField('Times Awoken', validators=[NumberRange(min=0)])
     dreams_torf = SelectField('Dreams', choices=[('t', 'Yes'), ('f', 'No')], validators=[DataRequired()])
     notes = TextAreaField('Notes', validators=[Length(max=300)])
