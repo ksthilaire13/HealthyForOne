@@ -49,8 +49,15 @@ class Run(db.Model):
 
     def pace(self):
         if self.duration and self.distance:
-            return self.duration.total_seconds() / 60 / self.distance
-        return 0
+            total_seconds = self.duration.total_seconds()
+            pace_seconds = total_seconds / self.distance
+
+            # Convert pace_seconds to timedelta
+            pace_timedelta = timedelta(seconds=pace_seconds)
+
+            return pace_timedelta
+
+        return timedelta()
 
 
 class Sleep(db.Model):

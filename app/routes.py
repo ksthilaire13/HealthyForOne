@@ -200,25 +200,13 @@ def sleep_display(sleep_id):
 @login_required
 def user_info():
     user_runs = Run.query.filter_by(user_id=current_user.id).all()
-    print(f"Current User ID: {current_user.id}")
     user_sleeps = Sleep.query.filter_by(user_id=current_user.id).all()
-    print(f"User Sleeps: {user_sleeps}")
-    username = current_user.username
-    email = current_user.email
-    name = current_user.name
-    date_registered = current_user.date_registered
-    bio = current_user.bio
-
     total_miles = sum_function(user_runs, "distance", current_user)
     total_time = sum_function(user_runs, "duration", current_user)
     overall_avg_pace = avg_function(user_runs, "pace", current_user)
     total_sleep_time = sum_function(user_sleeps, "sleep_duration", current_user)
-    sum_run_score = sum_function(user_runs, "run_score", current_user)
-    sum_sleep_score = sum_function(user_sleeps, "sleep_score", current_user)
-    print(total_miles)
-    print(total_time)
-    print(overall_avg_pace)
-    print(total_sleep_time)
-    print(sum_run_score)
-    print(sum_sleep_score)
-    return render_template('user_info.html',user=current_user)
+    avg_run_score = avg_function(user_runs, "run_score", current_user)
+    avg_sleep_score = avg_function(user_sleeps, "sleep_score", current_user)
+    return render_template('user_info.html', user=current_user, total_miles=total_miles,
+                           total_time=total_time, overall_avg_pace=overall_avg_pace, total_sleep_time=total_sleep_time,
+                           avg_run_score=avg_run_score, avg_sleep_score=avg_sleep_score)
