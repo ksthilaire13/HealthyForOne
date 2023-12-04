@@ -2,7 +2,7 @@ from datetime import timedelta, datetime
 from sqlalchemy import func
 from app import app, db
 from flask import render_template, redirect, url_for, flash, request
-from app.forms import LoginForm, RegistrationForm, SleepForm, RunForm
+from app.forms import LoginForm, RegistrationForm, SleepForm, RunForm, SelectUser
 from flask_login import login_user, logout_user, current_user, login_required
 from app.models import User, Run, Sleep
 from app.reset import reset_data
@@ -200,7 +200,7 @@ def day_display():
     return render_template('day_display.html', title='Day Display', user_sleep=user_sleep, time=time,
                            distance=distance, avg_pace=avg_pace, effort=effort, temp=temp, time_of_day=time_of_day,
                            notes=notes, score=score, num_sleeps=num_sleeps, num_runs=num_runs, user=current_user,
-                           datetime=datetime, sleep_trend=sleep_trend)
+                           datetime=datetime, sleep_trend=sleep_trend, form=form)
 
 
 @app.route('/run_display/<run_id>')
