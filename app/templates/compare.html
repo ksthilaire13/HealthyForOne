@@ -2,7 +2,7 @@
 {% block content %}
     <form method="post" action="{{ url_for('compare') }}" autocomplete="off" id="user-form">
         <label for="selected_user">Select user to compare:</label>
-        <select name="selected_user" id="selected_user">
+        <select name="selected_user" id="selected_user" onchange="updateDatesDropdown()">
             {% for other_user in other_users %}
                 <option value="{{ other_user.id }}" {% if selected_user and selected_user.id == other_user.id %}selected{% endif %}>
                     {{ other_user.username }}
@@ -13,17 +13,13 @@
         <button type="submit" name="submit_user">Compare by User</button>
     </form>
 
-    <form method="post" action="{{ url_for('compare') }}" autocomplete="off" id="date-form">
-        <label for="selected_date">Select date to compare:</label>
-        <select name="selected_date" id="selected_date">
-            <option value="overall" {% if selected_date == 'overall' %}selected{% endif %}>Overall Comparison</option>
-            {% for date in overall_dates %}
-                <option value="{{ date }}">{{ date }}</option>
-            {% endfor %}
-        </select>
-
-        <button type="button" name="submit_date" onclick="submitDateForm()">Compare by Date</button>
-    </form>
+    <label for="selected_date">Select date to compare:</label>
+    <select name="selected_date" id="selected_date">
+        <option value="overall" {% if selected_date == 'overall' %}selected{% endif %}>Overall Comparison</option>
+        {% for date in common_dates %}
+            <option value="{{ date }}">{{ date }}</option>
+        {% endfor %}
+    </select>
 
     <h4>Runs of {{ user.username }}:</h4>
     <ul>
@@ -47,39 +43,44 @@
     <h3><a href="{{ url_for('day_display') }}">Home</a></h3>
 
     <script>
-    function submitDateForm() {
-        // Get the selected date from the dropdown
-        var selectedDate = document.getElementById('selected_date').value;
+        function updateDatesDropdown() {
+            var userDates = {{ user_dates | tojson | safe }};
 
-        // Update the selected_date input value in the form
-        document.getElementById('selected_date').value = selectedDate;
+            var selectedUserId = document.getElementById('selected_user').value;
 
-        // Submit the form
-        document.getElementById('date-form').submit();
-    }
+            // Convert userDates to JSON format
+            var userDatesJSON = JSON.stringify(userDates);
 
-    // Function to update the dates dropdown based on the selected user
-    function updateDatesDropdown() {
-        // Access the common_dates directly from the template context
-        var commonDates = {{ common_dates | tojson }};
+            // Make an AJAX request to get common_dates for the selected user
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/get_common_dates/' + selectedUserId + '?user_dates=' + userDatesJSON, true);
 
-        // Update the options in the dates dropdown
-        var dateDropdown = document.getElementById('selected_date');
-        dateDropdown.innerHTML = ''; // Clear existing options
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    // Parse the response JSON
+                    var commonDates = JSON.parse(xhr.responseText);
 
-        // Add 'Overall Comparison' option
-        var overallOption = document.createElement('option');
-        overallOption.value = 'overall';
-        overallOption.text = 'Overall Comparison';
-        dateDropdown.appendChild(overallOption);
+                    // Update the options in the dates dropdown
+                    var dateDropdown = document.getElementById('selected_date');
+                    dateDropdown.innerHTML = ''; // Clear existing options
 
-        // Add options for common dates
-        for (var i = 0; i < commonDates.length; i++) {
-            var dateOption = document.createElement('option');
-            dateOption.value = commonDates[i];
-            dateOption.text = commonDates[i];
-            dateDropdown.appendChild(dateOption);
+                    // Add 'Overall Comparison' option
+                    var overallOption = document.createElement('option');
+                    overallOption.value = 'overall';
+                    overallOption.text = 'Overall Comparison';
+                    dateDropdown.appendChild(overallOption);
+
+                    // Add options for common dates
+                    for (var i = 0; i < commonDates.length; i++) {
+                        var dateOption = document.createElement('option');
+                        dateOption.value = commonDates[i];
+                        dateOption.text = commonDates[i];
+                        dateDropdown.appendChild(dateOption);
+                    }
+                }
+            };
+
+            xhr.send();
         }
-    }
-</script>
+    </script>
 {% endblock %}

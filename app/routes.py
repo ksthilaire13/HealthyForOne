@@ -1,13 +1,13 @@
 from datetime import timedelta, datetime
 from sqlalchemy import func
 from app import app, db
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, jsonify
 from app.forms import LoginForm, RegistrationForm, SleepForm, RunForm
 from flask_login import login_user, logout_user, current_user, login_required
 from app.models import User, Run, Sleep
 from app.reset import reset_data
 from app.formulas import run_trend, sleep_trend, item_suggest, sum_function, avg_function
-from flask import jsonify
+import json
 
 
 @app.route('/')
@@ -178,6 +178,23 @@ def compare():
                            common_dates=common_dates, selected_date=selected_date, user_runs=user_runs,
                            selected_user_runs=selected_user_runs, user_dates=user_dates,
                            selected_user_dates=selected_user_dates)
+
+
+@app.route('/get_common_dates/<int:selected_user_id>')
+def get_common_dates(selected_user_id):
+    user_dates_param = request.args.get('user_dates')
+    user_dates = json.loads(user_dates_param) if user_dates_param else []
+    selected_user_runs = Run.query.filter_by(id=selected_user_id)
+    common_dates = []
+    selected_user_dates = []
+    for run in selected_user_runs:
+        if run.date not in selected_user_dates:
+            selected_user_dates.append(run.date)
+    for date in user_dates:
+        if date in selected_user_dates:
+            common_dates.append(date)
+    return jsonify(common_dates)
+
 
 
 @app.route('/runs_archive')
