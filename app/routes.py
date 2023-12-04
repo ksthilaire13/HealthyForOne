@@ -46,7 +46,7 @@ def register():
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
-    return render_template('register.html', title='Register', form=form)
+    return render_template('registers/register.html', title='Register', form=form)
 
 
 @app.route('/logout')
@@ -71,23 +71,52 @@ def inform(name):
     return render_template('userInfo.html',user=user)
 
 
-@app.route('/register_run')
+@app.route('/register_run', methods=['GET', 'POST'])
 @login_required
 def register_run():
-    return render_template('register_run.html')
+    form = RunForm()
+
+    if form.validate_on_submit():
+        run = Run(
+            date=form.date.data,
+            distance=form.distance.data,
+            duration=timedelta(hours=form.hours.data, minutes=form.minutes.data, seconds=form.seconds.data),
+            temperature=form.temperature.data,
+            time_of_day=form.time_of_day.data,
+            effort=form.effort.data,
+            weather=form.weather.data,
+            notes=form.notes.data,
+            user_id=current_user.id)
+        db.session.add(run)
+        db.session.commit()
+        flash('Run submitted successfully!')
+        return redirect(url_for('main'))
+    return render_template('registers/register_run.html', title='Submit Run', form=form)
 
 
 @app.route('/register_sleep')
 @login_required
 def register_sleep():
-    return render_template('register_sleep.html')
+    form = SleepForm()
+    if form.validate_on_submit():
+        sleep = Sleep(
+            bedtime=form.bedtime.data,
+            wake_up=form.wake_up.data,
+            times_awoken=form.times_awoken.data,
+            dreams_torf=form.dreams_torf.data,
+            notes=form.notes.data,
+            user_id=current_user.id)
+        db.session.add(sleep)
+        db.session.commit()
+        flash('Sleep submitted successfully!')
+        return redirect(url_for('main'))
+    return render_template('registers/register_sleep.html', title='Submit Sleep', form=form)
 
-
-@app.route('/compare/<name>To<otherName>')
+@app.route('/compareTo/<otherName>')
 @login_required
-def compare(name, otherName):
-    user = User.query.filter_by(name=name).first()
-    user2 = User.query.filter_by(name=otherName).first()
+def compare(otherName):
+    user = current_user
+    user2 = User.query.filter_by(username=otherName).first()
     return render_template('compare.html',user=user,user2=user2)
 
 
@@ -123,8 +152,8 @@ def run_display(run_id):
     if not current_user.is_authenticated:
         return redirect(url_for('main'))
     run = Run.query.filter_by(id=run_id).first_or_404()
-    score = run_trend(run)
-    pace = avg_pace(run.duration, run.distance)
+    score = run_trend(run, current_user)
+    pace = avg_pace(run)
     suggestion = item_suggest(run)
     return render_template('run_display.html', title='Run Display', run=run, score=score,
                            pace=pace, suggestion=suggestion)
@@ -135,9 +164,13 @@ def sleep_display(sleep_id):
     if not current_user.is_authenticated:
         return redirect(url_for('main'))
     sleep = Sleep.query.filter_by(id=sleep_id).first_or_404()
-    score = sleep_trend(sleep)
-    duration = sleep_duration(sleep.bedtime, sleep.wake_up)
+    score = sleep_trend(sleep, current_user)
+    duration = sleep_duration(sleep)
     suggestion = item_suggest(sleep)
     return render_template('sleep_display.html', title='Sleep Display', sleep=sleep, score=score,
                            duration=duration, suggestion=suggestion)
 
+@app.route('/user_info/<name>')
+def user_info(name):
+    user = User.query.filter_by(name=name).first()
+    return render_template('userInfo.html',user=user)
