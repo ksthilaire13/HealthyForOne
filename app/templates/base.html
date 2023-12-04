@@ -9,15 +9,13 @@
 {% block navbar %}
     <nav class="navbar navbar-default">
         <div>
-            <b><a href="{{ url_for('main') }}">HealthyForOne:</a></b>
             {% if current_user.is_anonymous %}
+            <b><a href="{{ url_for('main') }}">HealthyForOne:</a></b>
             <a href="{{ url_for('login') }}">Login</a>
             {% else %}
-            <a href="{{ url_for('day_display') }}">Day Display</a>
+            <b><a href="{{ url_for('day_display') }}">HealthyForOne:</a></b>
             <a href="{{ url_for('runs_archive') }}">Runs Archive</a>
             <a href="{{ url_for('sleep_archive') }}">Sleep Archive</a>
-            <a href="{{ url_for('register_run') }}">Register Run</a>
-            <a href="{{ url_for('register_sleep') }}">Register Sleep</a>
             <a href="{{ url_for('logout') }}">Logout</a>
             <a href="{{ url_for('user_info', name = current_user.username) }}">User Profile</a>
             {% endif %}

@@ -10,6 +10,13 @@ from app.formulas import run_trend, sleep_trend, item_suggest, sum_function, avg
 
 
 @app.route('/')
+def startup():
+    if current_user.is_authenticated:
+        return redirect(url_for('day_display'))
+    else:
+        return redirect(url_for('main'))
+
+
 @app.route('/main')
 def main():
     return render_template('main.html')
@@ -18,7 +25,7 @@ def main():
 @app.route('/login', methods=['GET','POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('main'))
+        return redirect(url_for('day_display'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -29,7 +36,7 @@ def login():
         next_page = request.args.get('next')
         flash('User Logged in: {}'.format(form.username.data))
         if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('main')
+            next_page = url_for('day_display')
         return redirect(next_page)
     return render_template('login.html', title='Sign In', form=form)
 
@@ -84,7 +91,7 @@ def register_run():
         db.session.add(run)
         db.session.commit()
         flash('Run submitted successfully!')
-        return redirect(url_for('main'))
+        return redirect(url_for('day_display'))
     return render_template('registers/register_run.html', title='Submit Run', form=form)
 
 
@@ -123,7 +130,7 @@ def register_sleep():
         db.session.add(sleep)
         db.session.commit()
         flash('Sleep submitted successfully!')
-        return redirect(url_for('main'))
+        return redirect(url_for('day_display'))
     return render_template('registers/register_sleep.html', title='Submit Sleep', form=form)
 
 

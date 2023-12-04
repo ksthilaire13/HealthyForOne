@@ -1,30 +1,33 @@
 {% extends "base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
     {% block app_content %}
-        <h1>{{ datetime.today().date() }}</h1>
+        <h3>{{ datetime.today().date() }}</h3>
         <br>
         {% if num_runs > 0 %}
-            <h3>Run Score: {{ score }}</h3>
-            <h3>Time: {{ time }}</h3>
-            <h3>Distance: {{ distance }}</h3>
-            <h3>Avg Pace: {{ avg_pace }}</h3>
-            <h3>Scored Effort: {{ effort }}</h3>
-            <h3>Temp: {{ temp }}</h3>
-            <h3>Time of Day: {{ time_of_day }}</h3>
-            <h3>Notes: {{ notes }}</h3>
+            <h5>Run Score: {{ score }}</h5>
+            <h5>Time: {{ time }}</h5>
+            <h5>Distance: {{ distance }}</h5>
+            <h5>Avg Pace: {{ avg_pace }}</h5>
+            <h5>Scored Effort: {{ effort }}</h5>
+            <h5>Temp: {{ temp }}</h5>
+            <h5>Time of Day: {{ time_of_day }}</h5>
+            <h5>Notes: {{ notes }}</h5>
         {% else %}
-            <h3>No run data available for today.</h3>
+            <h5>No run data available for today.</h5>
         {% endif %}
         <br>
         {% if user_sleep %}
-            <h3>Sleep Score: {{ sleep_trend(user_sleep, current_user) }}</h3>
-            <h3>Total Time Asleep: {{ user_sleep.duration() }}</h3>
-            <h3>Bedtime: {{ user_sleep.bedtime }}</h3>
-            <h3>Wake Up: {{ user_sleep.wake_up }}</h3>
-            <h3>Any Dreams?: {{ user_sleep.dreams_torf }}</h3>
-            <h3>Woken Up?: {{ user_sleep.times_awoken }}</h3>
-            <h3>Notes: {{ user_sleep.notes }}</h3>
+            <h5>Sleep Score: {{ sleep_trend(user_sleep, current_user) }}</h5>
+            <h5>Total Time Asleep: {{ user_sleep.duration() }}</h5>
+            <h5>Bedtime: {{ user_sleep.bedtime }}</h5>
+            <h5>Wake Up: {{ user_sleep.wake_up }}</h5>
+            <h5>Any Dreams?: {{ user_sleep.dreams_torf }}</h5>
+            <h5>Woken Up?: {{ user_sleep.times_awoken }}</h5>
+            <h5>Notes: {{ user_sleep.notes }}</h5>
         {% else %}
-            <h3>No sleep data available for today.</h3>
+            <h5>No sleep data available for today.</h5>
         {% endif %}
+        <h3><a href="{{ url_for('register_run') }}">Register Run</a>
+            <a href="{{ url_for('compare', otherName=otherName) }}">Compare Athletes</a>
+            <a href="{{ url_for('register_sleep') }}">Register Sleep</a></h3>
     {% endblock %}
