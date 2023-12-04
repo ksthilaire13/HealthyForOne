@@ -1,5 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
+    <form method="post" action="{{ url_for('compare') }}" autocomplete="off">
+        <label for="selected_user">Select user to compare:</label>
+        <select name="selected_user" id="selected_user">
+            {% for other_user in other_users %}
+                <option value="{{ other_user.id }}" {% if selected_user and selected_user.id == other_user.id %}selected{% endif %}>
+                    {{ other_user.username }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" name="submit_user">Compare by User</button>
+    </form>
+
+    <form method="post" action="{{ url_for('compare') }}" autocomplete="off">
+        <label for="selected_date">Select date to compare:</label>
+        <select name="selected_date" id="selected_date">
+            <option value="overall" {% if selected_date == 'overall' %}selected{% endif %}>Overall Comparison</option>
+            {% for date in common_dates %}
+                <option value="{{ date }}" {% if selected_date and selected_date == date %}selected{% endif %}>
+                    {{ date }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" name="submit_date">Compare by Date</button>
+    </form>
+
     <div>
         <p>
             {{ user.username }}<br>
@@ -11,16 +38,6 @@
         </p>
     </div>
 
-    <form method="post" action="{{ url_for('compare') }}">
-        <label for="selected_user">Select user to compare:</label>
-        <select name="selected_user" id="selected_user">
-            {% for other_user in other_users %}
-                <option value="{{ other_user.id }}">{{ other_user.username }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit">Compare</button>
-    </form>
-
     {% if selected_user %}
         <p>
             {{ selected_user.username }}<br>
@@ -28,7 +45,12 @@
             running stat 2<br>
             running stat 3<br>
             running stat 4<br>
+            <br><br>
         </p>
+    {% endif %}
+
+    {% if selected_date %}
+        <h4>Comparison for: {{ selected_date }}</h4>
     {% endif %}
 
     <h3><a href="{{ url_for('day_display') }}">Home</a></h3>

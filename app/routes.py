@@ -144,12 +144,27 @@ def compare():
     user = current_user
     other_users = User.query.filter(User.username != user.username).all()
     selected_user = None
+    selected_date = None
+    common_dates = []
 
     if request.method == 'POST':
-        selected_user_id = request.form.get('selected_user')
-        selected_user = User.query.get(selected_user_id)
+        if 'submit_user' in request.form:
+            # Handle user comparison
+            selected_user_id = request.form.get('selected_user')
+            selected_user = User.query.get(selected_user_id)
 
-    return render_template('compare.html', user=user, other_users=other_users, selected_user=selected_user)
+        if 'submit_date' in request.form:
+            # Handle date comparison
+            selected_date = request.form.get('selected_date')
+
+            if selected_user:
+                # Retrieve common dates between selected user and current user
+                user_dates = set([str(run.date) for run in user.runs])
+                selected_user_dates = set([str(run.date) for run in selected_user.runs])
+                common_dates = list(user_dates.intersection(selected_user_dates))
+
+    return render_template('compare.html', user=user, other_users=other_users, selected_user=selected_user,
+                           common_dates=common_dates, selected_date=selected_date)
 
 
 @app.route('/runs_archive')
