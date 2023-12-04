@@ -70,9 +70,7 @@ def register_run():
     if not current_user.is_authenticated:
         return redirect(url_for('main'))
     form = RunForm()
-    print("check 1")
     if form.validate_on_submit():
-        print("check 2")
         run = Run(
             date=form.date.data,
             distance=form.distance.data,
@@ -83,13 +81,9 @@ def register_run():
             weather=form.weather.data,
             notes=form.notes.data,
             user_id=current_user.id)
-        print("check 3")
         db.session.add(run)
-        print("check 4")
         db.session.commit()
-        print("check 5")
         flash('Run submitted successfully!')
-        print("check 6")
         return redirect(url_for('main'))
     return render_template('registers/register_run.html', title='Submit Run', form=form)
 

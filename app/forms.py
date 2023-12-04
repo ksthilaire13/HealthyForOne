@@ -49,9 +49,10 @@ class RunForm(FlaskForm):
             raise ValidationError('Date cannot be in the future.')
 
     def validate_time_of_day(self, field):
-        current_time = datetime.now().time()
+        entered_date = self.date.data
+        current_date = datetime.now().date()
         entered_time = field.data
-        if entered_time >= current_time:
+        if entered_date == current_date and entered_time >= datetime.now().time():
             raise ValidationError('Time of day cannot be in the future.')
 
 
@@ -64,17 +65,21 @@ class SleepForm(FlaskForm):
     notes = TextAreaField('Notes', validators=[Length(max=300)])
 
     def validate_date(self, field):
-        if field.data > datetime.now().date():
-            raise ValidationError('Date cannot be in the future.')
+        if field.data >= datetime.now().date():
+            raise ValidationError('Date cannot be today or in the future.')
 
     def validate_bedtime(self, field):
+        entered_date = self.date.data
+        current_date = datetime.now().date()
         current_time = datetime.now().time()
         entered_time = field.data
-        if entered_time > current_time:
+        if entered_date == current_date and entered_time > current_time:
             raise ValidationError('Bedtime cannot be in the future.')
 
     def validate_wake_up(self, field):
+        entered_date = self.date.data
+        yesterday = datetime.now().date() - timedelta(days=1)
         current_time = datetime.now().time()
         entered_time = field.data
-        if entered_time > current_time:
+        if entered_date == yesterday and entered_time > current_time:
             raise ValidationError('Wake up time cannot be in the future.')

@@ -6,8 +6,23 @@
            <form method="post" action="{{ url_for('register_sleep') }}">
                {{ form.hidden_tag() }}
                <div>{{ form.date.label }}: {{ form.date() }}</div>
+                   {% if form.date.errors %}
+                        <div class="alert alert-danger">
+                            {{ form.date.errors|join(', ') }}
+                        </div>
+                    {% endif %}
                <div> {{ form.bedtime.label }}: {{ form.bedtime() }}</div>
+                    {% if form.bedtime.errors %}
+                        <div class="alert alert-danger">
+                            {{ form.bedtime.errors|join(', ') }}
+                        </div>
+                    {% endif %}
                <div> {{ form.wake_up.label }}: {{ form.wake_up() }}</div>
+                    {% if form.wake_up.errors %}
+                        <div class="alert alert-danger">
+                            {{ form.wake_up.errors|join(', ') }}
+                        </div>
+                    {% endif %}
                <div>{{ form.times_awoken.label }}: {{ form.times_awoken() }}</div>
                <div>{{ form.dreams_torf.label }}: {{ form.dreams_torf() }}</div>
                <div>{{ form.notes.label }}: {{ form.notes() }}</div>
