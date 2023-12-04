@@ -2,12 +2,18 @@
 {% import 'bootstrap/wtf.html' as wtf %}
     {% block app_content %}
         <h1>Sleep Score: {{ score }}</h1>
-        <h2>{{ sleep.date }}</h2>
+        <h2>{{ sleep.date.strftime('%Y-%m-%d') }}</h2>
         <h3> Woken Up: {{ sleep.times_awoken }}</h3>
-        <h3> Bedtime: {{ sleep.bedtime }}</h3>
-        <h3> Wake-up Time: {{ sleep.wake_up }}</h3>
+        <h3> Bedtime: {{ sleep.bedtime.strftime('%H:%M') }}</h3>
+        <h3> Wake-up Time: {{ sleep.wake_up.strftime('%H:%M') }}</h3>
         <h3> Dreams?: {{ sleep.dreams_torf }}</h3>
-        <h3> Total Sleep: {{ duration }}</h3>
+    {% if duration.days < 0 %}
+        <h3> Total Sleep: 0 hours, 0 minutes</h3>
+    {% else %}
+        <h3> Total Sleep: {{ duration.days * 24 + duration.seconds // 3600 }} hours, {{ (duration.seconds % 3600) // 60 }} minutes</h3>
+    {% endif %}
         <p> Notes: {{ sleep.notes }}</p>
         <h1>Run Recommendation: {{ rec }}</h1>
+        <br>
+        <h3><a href="{{ url_for('day_display') }}">Home</a></h3>
     {% endblock %}

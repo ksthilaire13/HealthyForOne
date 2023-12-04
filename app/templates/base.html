@@ -9,14 +9,15 @@
 {% block navbar %}
     <nav class="navbar navbar-default">
         <div>
-            <b><a href="{{ url_for('main') }}">HealthyForOne:</a></b>
             {% if current_user.is_anonymous %}
+            <b><a href="{{ url_for('main') }}">HealthyForOne:</a></b>
             <a href="{{ url_for('login') }}">Login</a>
             {% else %}
-{#            <a href="{{ url_for('day_display') }}">Day Display</a>#}
+            <b><a href="{{ url_for('day_display') }}">HealthyForOne:</a></b>
             <a href="{{ url_for('runs_archive') }}">Runs Archive</a>
             <a href="{{ url_for('sleep_archive') }}">Sleep Archive</a>
             <a href="{{ url_for('logout') }}">Logout</a>
+            <a href="{{ url_for('user_info', name = current_user.username) }}">User Profile</a>
             {% endif %}
         </div>
     </nav>
@@ -31,6 +32,7 @@
             {% endfor %}
         {% endif %}
         {% endwith %}
+
         {# application content needs to be provided in the app_content block #}
         {% block app_content %}{% endblock %}
     </div>

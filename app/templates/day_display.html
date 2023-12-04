@@ -1,9 +1,33 @@
 {% extends "base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
     {% block app_content %}
-        <h1>
-        Day Display
-        </h1>
-        <p>This is going to be the day display</p>
-
+        <h3>{{ datetime.today().date() }}</h3>
+        <br>
+        {% if num_runs > 0 %}
+            <h5>Run Score: {{ score }}</h5>
+            <h5>Time: {{ time }}</h5>
+            <h5>Distance: {{ distance }}</h5>
+            <h5>Avg Pace: {{ avg_pace }}</h5>
+            <h5>Scored Effort: {{ effort }}</h5>
+            <h5>Temp: {{ temp }}</h5>
+            <h5>Time of Day: {{ time_of_day }}</h5>
+            <h5>Notes: {{ notes }}</h5>
+        {% else %}
+            <h5>No run data available for today.</h5>
+        {% endif %}
+        <br>
+        {% if user_sleep %}
+            <h5>Sleep Score: {{ sleep_trend(user_sleep, current_user) }}</h5>
+            <h5>Total Time Asleep: {{ user_sleep.duration() }}</h5>
+            <h5>Bedtime: {{ user_sleep.bedtime }}</h5>
+            <h5>Wake Up: {{ user_sleep.wake_up }}</h5>
+            <h5>Any Dreams?: {{ user_sleep.dreams_torf }}</h5>
+            <h5>Woken Up?: {{ user_sleep.times_awoken }}</h5>
+            <h5>Notes: {{ user_sleep.notes }}</h5>
+        {% else %}
+            <h5>No sleep data available for today.</h5>
+        {% endif %}
+        <h3><a href="{{ url_for('register_run') }}">Register Run</a>
+            <a href="{{ url_for('compare', otherName=otherName) }}">Compare Athletes</a>
+            <a href="{{ url_for('register_sleep') }}">Register Sleep</a></h3>
     {% endblock %}

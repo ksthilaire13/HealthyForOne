@@ -1,1 +1,21 @@
 {% extends "base.html" %}
+    {% block content %}
+        <div>
+            <p>
+                {{ user.username }}<br>
+                running stat 1<br>
+                running stat 2<br>
+                running stat 3<br>
+                running stat 4<br>
+                <br><br>
+            </p>
+        </div>
+        <p>
+            {{ user2.username }}<br>
+            running stat 1<br>
+            running stat 2<br>
+            running stat 3<br>
+            running stat 4<br>
+        </p>
+        <h3><a href="{{ url_for('day_display') }}">Home</a></h3>
+    {% endblock %}

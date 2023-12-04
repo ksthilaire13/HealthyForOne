@@ -10,6 +10,8 @@
         <h3> Temperature: {{ run.temp }}</h3>
         <h3> Time of Day: {{ run.time_of_day }}</h3>
         <h3> Weather: {{ run.weather }}</h3>
-        <p> Notes: {{ run.notes }}</p>
-        <h1>Sleep Recommendation: {{ rec }}</h1>
+        <h3> Notes: {{ run.notes }}</h3>
+        <h3>Sleep Recommendation: {{ rec }}</h3>
+        <br>
+        <h3><a href="{{ url_for('day_display') }}">Home</a></h3>
     {% endblock %}
