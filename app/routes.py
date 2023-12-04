@@ -163,19 +163,21 @@ def day_display():
     if not current_user.is_authenticated:
         return redirect(url_for('main'))
     today_date = datetime.today().date()
-    user_run = Run.query.filter_by(user_id=current_user.id, date=today_date).all()
-    user_sleeps = Sleep.query.filter_by(user_id=current_user.id, date=today_date).all()
+    yesterday_date = datetime.today().date() - timedelta(days=1)
+    user_runs = Run.query.filter_by(user_id=current_user.id, date=today_date).all()
+    user_sleeps = Sleep.query.filter_by(user_id=current_user.id, date=yesterday_date).all()
+    print(user_sleeps)
     num_sleeps = len(user_sleeps)
-    num_runs = len(user_run)
+    num_runs = len(user_runs)
     if num_runs > 0:
-        time = sum_function(user_run, "duration", current_user)
-        distance = sum_function(user_run, "distance", current_user)
-        avg_pace = avg_function(user_run, "pace", current_user)
-        effort = avg_function(user_run, "effort", current_user)
-        temp = avg_function(user_run, "temp", current_user)
-        time_of_day = sum_function(user_run, "time_of_day", current_user)
-        notes = sum_function(user_run, "notes", current_user)
-        score = avg_function(user_run, "run_score", current_user)
+        time = sum_function(user_runs, "duration", current_user)
+        distance = sum_function(user_runs, "distance", current_user)
+        avg_pace = avg_function(user_runs, "pace", current_user)
+        effort = avg_function(user_runs, "effort", current_user)
+        temp = avg_function(user_runs, "temp", current_user)
+        time_of_day = sum_function(user_runs, "time_of_day", current_user)
+        notes = sum_function(user_runs, "notes", current_user)
+        score = avg_function(user_runs, "run_score", current_user)
     else:
         time = None
         distance = None
@@ -188,7 +190,7 @@ def day_display():
 
     user_sleep = user_sleeps[0] if num_sleeps > 0 else None
 
-    return render_template('day_display.html', title='Day Display', sleep=user_sleep, time=time,
+    return render_template('day_display.html', title='Day Display', user_sleep=user_sleep, time=time,
                            distance=distance, avg_pace=avg_pace, effort=effort, temp=temp, time_of_day=time_of_day,
                            notes=notes, score=score, num_sleeps=num_sleeps, num_runs=num_runs, user=current_user,
                            datetime=datetime, sleep_trend=sleep_trend)
