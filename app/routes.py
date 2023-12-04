@@ -65,6 +65,7 @@ def logout():
 
 @app.route('/reset_db')
 def reset_db():
+    logout_user()
     flash("Resetting database: deleting old data and repopulating with dummy data")
     # clear all data from all tables - in a separate file...
     reset_data()
