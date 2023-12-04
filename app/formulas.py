@@ -139,7 +139,7 @@ def sum_function(item_list, parameter, current_user):
         total = item_list[0].duration() - item_list[0].duration()
         for item in item_list:
             total = total + item.duration()
-    elif parameter == "run_score":
+    elif parameter in ["run_score", "run_scores"]:
         total = 0
         for item in item_list:
             if run_trend(item, current_user) != "Cannot be calculated yet":
@@ -150,11 +150,11 @@ def sum_function(item_list, parameter, current_user):
             if sleep_trend(item, current_user) != "Cannot be calculated yet":
                 total = total + sleep_trend(item, current_user)
     elif parameter in ["time_of_day", "notes"]:
-        times = ""
+        total = ""
         for item in item_list:
-            if len(times) > 1:
-                times = times + "and"
-            times = times + item.time_of_day
+            if len(total) > 1:
+                total = total + "and"
+            total = total + str(getattr(item, parameter, 0))
     else:
         raise ValueError(f"Unsupported parameter: {parameter}")
 

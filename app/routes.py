@@ -70,7 +70,9 @@ def register_run():
     if not current_user.is_authenticated:
         return redirect(url_for('main'))
     form = RunForm()
+    print("check 1")
     if form.validate_on_submit():
+        print("check 2")
         run = Run(
             date=form.date.data,
             distance=form.distance.data,
@@ -81,9 +83,13 @@ def register_run():
             weather=form.weather.data,
             notes=form.notes.data,
             user_id=current_user.id)
+        print("check 3")
         db.session.add(run)
+        print("check 4")
         db.session.commit()
+        print("check 5")
         flash('Run submitted successfully!')
+        print("check 6")
         return redirect(url_for('main'))
     return render_template('registers/register_run.html', title='Submit Run', form=form)
 
@@ -166,7 +172,6 @@ def day_display():
     yesterday_date = datetime.today().date() - timedelta(days=1)
     user_runs = Run.query.filter_by(user_id=current_user.id, date=today_date).all()
     user_sleeps = Sleep.query.filter_by(user_id=current_user.id, date=yesterday_date).all()
-    print(user_sleeps)
     num_sleeps = len(user_sleeps)
     num_runs = len(user_runs)
     if num_runs > 0:
@@ -177,7 +182,7 @@ def day_display():
         temp = avg_function(user_runs, "temp", current_user)
         time_of_day = sum_function(user_runs, "time_of_day", current_user)
         notes = sum_function(user_runs, "notes", current_user)
-        score = avg_function(user_runs, "run_score", current_user)
+        score = avg_function(user_runs, "run_scores", current_user)
     else:
         time = None
         distance = None
