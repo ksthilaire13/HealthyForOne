@@ -17,41 +17,71 @@
         <label for="selected_date">Select date to compare:</label>
         <select name="selected_date" id="selected_date">
             <option value="overall" {% if selected_date == 'overall' %}selected{% endif %}>Overall Comparison</option>
-            {% for date in common_dates %}
-                <option value="{{ date }}" {% if selected_date and selected_date == date %}selected{% endif %}>
-                    {{ date }}
-                </option>
-            {% endfor %}
         </select>
 
         <button type="submit" name="submit_date">Compare by Date</button>
     </form>
+    <p>
+        {{ user.username }}<br>
+        running stat 1<br>
+        running stat 2<br>
+        running stat 3<br>
+        running stat 4<br>
+        <br><br>
+    </p>
 
-    <div>
-        <p>
-            {{ user.username }}<br>
-            running stat 1<br>
-            running stat 2<br>
-            running stat 3<br>
-            running stat 4<br>
-            <br><br>
-        </p>
-    </div>
+    <h4>Runs of {{ user.username }}:</h4>
+    <ul>
+        {% for run in user_runs %}
+            <li>{{ run.date }} - Distance: {{ run.distance }} km, Duration: {{ run.duration }} </li>
+        {% endfor %}
 
     {% if selected_user %}
-        <p>
-            {{ selected_user.username }}<br>
-            running stat 1<br>
-            running stat 2<br>
-            running stat 3<br>
-            running stat 4<br>
-            <br><br>
-        </p>
-    {% endif %}
+    <p>
+        {{ selected_user.username }}<br>
+        running stat 1<br>
+        running stat 2<br>
+        running stat 3<br>
+        running stat 4<br>
+        <br><br>
+    </p>
+
+    <h4>Runs of {{ selected_user.username }}:</h4>
+    <ul>
+        {% for run in selected_user_runs %}
+            <li>{{ run.date }} - Distance: {{ run.distance }} km, Duration: {{ run.duration }} </li>
+        {% endfor %}
+    </ul>
+{% endif %}
 
     {% if selected_date %}
         <h4>Comparison for: {{ selected_date }}</h4>
     {% endif %}
 
     <h3><a href="{{ url_for('day_display') }}">Home</a></h3>
+
+    <script>
+        // JavaScript code to dynamically update date options based on selected user
+        document.getElementById('selected_user').addEventListener('change', function () {
+            // Get the selected user ID
+            var selectedUserId = this.value;
+
+            // Fetch dates for the selected user using AJAX
+            fetch(`/get_dates/${selectedUserId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Clear existing options
+                    var dateSelect = document.getElementById('selected_date');
+                    dateSelect.innerHTML = '';
+
+                    // Add new options
+                    data.dates.forEach(function (date) {
+                        var option = document.createElement('option');
+                        option.value = date;
+                        option.text = date;
+                        dateSelect.add(option);
+                    });
+                });
+        });
+    </script>
 {% endblock %}

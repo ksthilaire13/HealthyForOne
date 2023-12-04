@@ -7,6 +7,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from app.models import User, Run, Sleep
 from app.reset import reset_data
 from app.formulas import run_trend, sleep_trend, item_suggest, sum_function, avg_function
+from flask import jsonify
 
 
 @app.route('/')
@@ -142,9 +143,11 @@ def compare():
         return redirect(url_for('main'))
 
     user = current_user
+    user_runs = Run.query.filter_by(user_id=current_user.id)
     other_users = User.query.filter(User.username != user.username).all()
     selected_user = None
     selected_date = None
+    selected_user_runs = None
     common_dates = []
 
     if request.method == 'POST':
@@ -152,6 +155,7 @@ def compare():
             # Handle user comparison
             selected_user_id = request.form.get('selected_user')
             selected_user = User.query.get(selected_user_id)
+            selected_user_runs = Run.query.filter_by(user_id=selected_user.id).all()
 
         if 'submit_date' in request.form:
             # Handle date comparison
@@ -164,7 +168,18 @@ def compare():
                 common_dates = list(user_dates.intersection(selected_user_dates))
 
     return render_template('compare.html', user=user, other_users=other_users, selected_user=selected_user,
-                           common_dates=common_dates, selected_date=selected_date)
+                           common_dates=common_dates, selected_date=selected_date, user_runs=user_runs,
+                           selected_user_runs=selected_user_runs)
+
+
+@app.route('/get_dates/<int:user_id>')
+@login_required
+def get_dates(user_id):
+    selected_user = User.query.get(user_id)
+    if selected_user:
+        user_dates = set([str(run.date) for run in selected_user.runs])
+        return jsonify({'dates': list(user_dates)})
+    return jsonify({'dates': []})
 
 
 @app.route('/runs_archive')
