@@ -135,14 +135,21 @@ def register_sleep():
     return render_template('registers/register_sleep.html', title='Submit Sleep', form=form)
 
 
-@app.route('/compareTo/<otherName>')
+@app.route('/compare', methods=['GET', 'POST'])
 @login_required
-def compare(otherName):
+def compare():
     if not current_user.is_authenticated:
         return redirect(url_for('main'))
+
     user = current_user
-    user2 = User.query.filter_by(username=otherName).first()
-    return render_template('compare.html', user=user, user2=user2)
+    other_users = User.query.filter(User.username != user.username).all()
+    selected_user = None
+
+    if request.method == 'POST':
+        selected_user_id = request.form.get('selected_user')
+        selected_user = User.query.get(selected_user_id)
+
+    return render_template('compare.html', user=user, other_users=other_users, selected_user=selected_user)
 
 
 @app.route('/runs_archive')

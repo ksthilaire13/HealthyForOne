@@ -1,21 +1,35 @@
 {% extends "base.html" %}
-    {% block content %}
-        <div>
-            <p>
-                {{ user.username }}<br>
-                running stat 1<br>
-                running stat 2<br>
-                running stat 3<br>
-                running stat 4<br>
-                <br><br>
-            </p>
-        </div>
+{% block content %}
+    <div>
         <p>
-            {{ user2.username }}<br>
+            {{ user.username }}<br>
+            running stat 1<br>
+            running stat 2<br>
+            running stat 3<br>
+            running stat 4<br>
+            <br><br>
+        </p>
+    </div>
+
+    <form method="post" action="{{ url_for('compare') }}">
+        <label for="selected_user">Select user to compare:</label>
+        <select name="selected_user" id="selected_user">
+            {% for other_user in other_users %}
+                <option value="{{ other_user.id }}">{{ other_user.username }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Compare</button>
+    </form>
+
+    {% if selected_user %}
+        <p>
+            {{ selected_user.username }}<br>
             running stat 1<br>
             running stat 2<br>
             running stat 3<br>
             running stat 4<br>
         </p>
-        <h3><a href="{{ url_for('day_display') }}">Home</a></h3>
-    {% endblock %}
+    {% endif %}
+
+    <h3><a href="{{ url_for('day_display') }}">Home</a></h3>
+{% endblock %}
