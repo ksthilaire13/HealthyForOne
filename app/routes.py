@@ -149,6 +149,12 @@ def compare():
     selected_date = None
     selected_user_runs = None
     common_dates = []
+    user_dates = []
+    selected_user_dates = []
+
+    for run in user_runs:
+        if run.date not in user_dates:
+            user_dates.append(run.date)
 
     if request.method == 'POST':
         if 'submit_user' in request.form:
@@ -156,30 +162,22 @@ def compare():
             selected_user_id = request.form.get('selected_user')
             selected_user = User.query.get(selected_user_id)
             selected_user_runs = Run.query.filter_by(user_id=selected_user.id).all()
+            common_dates = []
+            selected_user_dates = []
+            for run in selected_user_runs:
+                if run.date not in selected_user_dates:
+                    selected_user_dates.append(run.date)
+            for date in user_dates:
+                if date in selected_user_dates:
+                    common_dates.append(date)
 
         if 'submit_date' in request.form:
-            # Handle date comparison
             selected_date = request.form.get('selected_date')
-
-            if selected_user:
-                # Retrieve common dates between selected user and current user
-                user_dates = set([str(run.date) for run in user.runs])
-                selected_user_dates = set([str(run.date) for run in selected_user.runs])
-                common_dates = list(user_dates.intersection(selected_user_dates))
 
     return render_template('compare.html', user=user, other_users=other_users, selected_user=selected_user,
                            common_dates=common_dates, selected_date=selected_date, user_runs=user_runs,
-                           selected_user_runs=selected_user_runs)
-
-
-@app.route('/get_dates/<int:user_id>')
-@login_required
-def get_dates(user_id):
-    selected_user = User.query.get(user_id)
-    if selected_user:
-        user_dates = set([str(run.date) for run in selected_user.runs])
-        return jsonify({'dates': list(user_dates)})
-    return jsonify({'dates': []})
+                           selected_user_runs=selected_user_runs, user_dates=user_dates,
+                           selected_user_dates=selected_user_dates)
 
 
 @app.route('/runs_archive')

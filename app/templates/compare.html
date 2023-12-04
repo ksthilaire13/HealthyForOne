@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-    <form method="post" action="{{ url_for('compare') }}" autocomplete="off">
+    <form method="post" action="{{ url_for('compare') }}" autocomplete="off" id="user-form">
         <label for="selected_user">Select user to compare:</label>
         <select name="selected_user" id="selected_user">
             {% for other_user in other_users %}
@@ -13,46 +13,32 @@
         <button type="submit" name="submit_user">Compare by User</button>
     </form>
 
-    <form method="post" action="{{ url_for('compare') }}" autocomplete="off">
+    <form method="post" action="{{ url_for('compare') }}" autocomplete="off" id="date-form">
         <label for="selected_date">Select date to compare:</label>
         <select name="selected_date" id="selected_date">
             <option value="overall" {% if selected_date == 'overall' %}selected{% endif %}>Overall Comparison</option>
+            {% for date in overall_dates %}
+                <option value="{{ date }}">{{ date }}</option>
+            {% endfor %}
         </select>
 
-        <button type="submit" name="submit_date">Compare by Date</button>
+        <button type="button" name="submit_date" onclick="submitDateForm()">Compare by Date</button>
     </form>
-    <p>
-        {{ user.username }}<br>
-        running stat 1<br>
-        running stat 2<br>
-        running stat 3<br>
-        running stat 4<br>
-        <br><br>
-    </p>
 
     <h4>Runs of {{ user.username }}:</h4>
     <ul>
         {% for run in user_runs %}
             <li>{{ run.date }} - Distance: {{ run.distance }} km, Duration: {{ run.duration }} </li>
         {% endfor %}
-
-    {% if selected_user %}
-    <p>
-        {{ selected_user.username }}<br>
-        running stat 1<br>
-        running stat 2<br>
-        running stat 3<br>
-        running stat 4<br>
-        <br><br>
-    </p>
-
-    <h4>Runs of {{ selected_user.username }}:</h4>
-    <ul>
-        {% for run in selected_user_runs %}
-            <li>{{ run.date }} - Distance: {{ run.distance }} km, Duration: {{ run.duration }} </li>
-        {% endfor %}
     </ul>
-{% endif %}
+    {% if selected_user %}
+        <h4>Runs of {{ selected_user.username }}:</h4>
+        <ul>
+            {% for run in selected_user_runs %}
+                <li>{{ run.date }} - Distance: {{ run.distance }} km, Duration: {{ run.duration }} </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
     {% if selected_date %}
         <h4>Comparison for: {{ selected_date }}</h4>
@@ -61,27 +47,39 @@
     <h3><a href="{{ url_for('day_display') }}">Home</a></h3>
 
     <script>
-        // JavaScript code to dynamically update date options based on selected user
-        document.getElementById('selected_user').addEventListener('change', function () {
-            // Get the selected user ID
-            var selectedUserId = this.value;
+    function submitDateForm() {
+        // Get the selected date from the dropdown
+        var selectedDate = document.getElementById('selected_date').value;
 
-            // Fetch dates for the selected user using AJAX
-            fetch(`/get_dates/${selectedUserId}`)
-                .then(response => response.json())
-                .then(data => {
-                    // Clear existing options
-                    var dateSelect = document.getElementById('selected_date');
-                    dateSelect.innerHTML = '';
+        // Update the selected_date input value in the form
+        document.getElementById('selected_date').value = selectedDate;
 
-                    // Add new options
-                    data.dates.forEach(function (date) {
-                        var option = document.createElement('option');
-                        option.value = date;
-                        option.text = date;
-                        dateSelect.add(option);
-                    });
-                });
-        });
-    </script>
+        // Submit the form
+        document.getElementById('date-form').submit();
+    }
+
+    // Function to update the dates dropdown based on the selected user
+    function updateDatesDropdown() {
+        // Access the common_dates directly from the template context
+        var commonDates = {{ common_dates | tojson }};
+
+        // Update the options in the dates dropdown
+        var dateDropdown = document.getElementById('selected_date');
+        dateDropdown.innerHTML = ''; // Clear existing options
+
+        // Add 'Overall Comparison' option
+        var overallOption = document.createElement('option');
+        overallOption.value = 'overall';
+        overallOption.text = 'Overall Comparison';
+        dateDropdown.appendChild(overallOption);
+
+        // Add options for common dates
+        for (var i = 0; i < commonDates.length; i++) {
+            var dateOption = document.createElement('option');
+            dateOption.value = commonDates[i];
+            dateOption.text = commonDates[i];
+            dateDropdown.appendChild(dateOption);
+        }
+    }
+</script>
 {% endblock %}

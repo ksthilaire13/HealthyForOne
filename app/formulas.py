@@ -159,5 +159,3 @@ def sum_function(item_list, parameter, current_user):
         raise ValueError(f"Unsupported parameter: {parameter}")
 
     return total
-
-
