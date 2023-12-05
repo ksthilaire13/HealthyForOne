@@ -3,7 +3,7 @@
 {% import 'bootstrap/wtf.html' as wtf %}
     {% block app_content %}
            <h1>Submit Run</h1>
-           <form method="post" action="{{ url_for('register_run') }}" novalidate>
+           <form method="post" action="{{ url_for('register_run') }}">
                {{ form.hidden_tag() }}
                <div>{{ form.date.label }}: {{ form.date() }}</div>
                 {% if form.date.errors %}
