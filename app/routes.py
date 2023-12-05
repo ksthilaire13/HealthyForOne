@@ -146,7 +146,7 @@ def compare():
     user_runs = Run.query.filter_by(user_id=current_user.id)
     other_users = User.query.filter(User.username != user.username).all()
     selected_user = None
-    selected_date = None
+    selected_date = 'overall'
     selected_user_runs = None
     common_dates = []
     user_dates = []
@@ -159,6 +159,7 @@ def compare():
     if request.method == 'POST':
         if 'submit_user' in request.form:
             # Handle user comparison
+            print("made it here 3")
             selected_user_id = request.form.get('selected_user')
             selected_user = User.query.get(selected_user_id)
             selected_user_runs = Run.query.filter_by(user_id=selected_user.id).all()
@@ -173,6 +174,7 @@ def compare():
 
         if 'submit_date' in request.form:
             selected_date = request.form.get('selected_date')
+            print("Selected Date:", selected_date)
 
     return render_template('compare.html', user=user, other_users=other_users, selected_user=selected_user,
                            common_dates=common_dates, selected_date=selected_date, user_runs=user_runs,
@@ -182,6 +184,7 @@ def compare():
 
 @app.route('/get_common_dates/<int:selected_user_id>')
 def get_common_dates(selected_user_id):
+    print("made it here 2")
     user_dates_param = request.args.get('user_dates')
     user_dates = json.loads(user_dates_param) if user_dates_param else []
     selected_user_runs = Run.query.filter_by(id=selected_user_id)
@@ -196,6 +199,20 @@ def get_common_dates(selected_user_id):
     return jsonify(common_dates)
 
 
+@app.route('/update_content', methods=['POST'])
+def update_content():
+    print("made it here 1")
+    data = request.json
+    selected_user_id = data.get('selectedUserId')
+    user_id = data.get('userId')
+    selected_date = data.get('selectedDate')
+
+    # Example: Render a template based on the selected_date
+    if selected_date == 'overall':
+        return render_template('overall_stats.html')
+    else:
+        # Render a template or return data based on the selected_date
+        return render_template('specific_date_stats.html')
 
 @app.route('/runs_archive')
 @login_required

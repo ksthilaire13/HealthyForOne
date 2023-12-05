@@ -2,7 +2,7 @@
 {% block content %}
     <form method="post" action="{{ url_for('compare') }}" autocomplete="off" id="user-form">
         <label for="selected_user">Select user to compare:</label>
-        <select name="selected_user" id="selected_user" onchange="updateDatesDropdown()">
+        <select name="selected_user" id="selected_user" onchange="updateDisplay();">
             {% for other_user in other_users %}
                 <option value="{{ other_user.id }}" {% if selected_user and selected_user.id == other_user.id %}selected{% endif %}>
                     {{ other_user.username }}
@@ -11,15 +11,20 @@
         </select>
 
         <button type="submit" name="submit_user">Compare by User</button>
-    </form>
 
-    <label for="selected_date">Select date to compare:</label>
-    <select name="selected_date" id="selected_date">
-        <option value="overall" {% if selected_date == 'overall' %}selected{% endif %}>Overall Comparison</option>
-        {% for date in common_dates %}
-            <option value="{{ date }}">{{ date }}</option>
-        {% endfor %}
-    </select>
+        <label for="selected_date">Select date to compare:</label>
+            <select name="selected_date" id="selected_date" onchange="updateDisplay();">
+                <option value="overall" {% if selected_date == 'overall' %}selected{% endif %}>Overall Comparison</option>
+                {% for date in common_dates %}
+                    <option value="{{ date }}" {% if selected_date == date %}selected{% endif %}>{{ date }}</option>
+                {% endfor %}
+            </select>
+
+        <input type="hidden" name="selected_date" id="hidden_selected_date" value="{{ selected_date }}">
+        <input type="hidden" name="selected_user" id="hidden_selected_user" value="{{ selected_user.id }}">
+
+        <button type="submit" name="submit_date">Submit Date</button>
+    </form>
 
     <h4>Runs of {{ user.username }}:</h4>
     <ul>
@@ -42,45 +47,57 @@
 
     <h3><a href="{{ url_for('day_display') }}">Home</a></h3>
 
+    <div id="runs-data">
+        {% if selected_date == 'overall' %}
+            <h4>Overall Stats:</h4>
+        {% else %}
+            <h4>Runs on {{ selected_date }}:</h4>
+            <ul>
+                {% for run in user_runs %}
+                    {% if run.date == selected_date %}
+                        <li>{{ run.date }} - Distance: {{ run.distance }} km, Duration: {{ run.duration }} </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            {% if selected_user %}
+                <h4>Runs of {{ selected_user.username }}:</h4>
+                <ul>
+                    {% for run in selected_user_runs %}
+                        {% if run.date == selected_date %}
+                            <li>{{ run.date }} - Distance: {{ run.distance }} km, Duration: {{ run.duration }} </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <h3><a href="{{ url_for('day_display') }}">Home</a></h3>
+
     <script>
-        function updateDatesDropdown() {
-            var userDates = {{ user_dates | tojson | safe }};
-
+        function updateDisplay() {
             var selectedUserId = document.getElementById('selected_user').value;
+            var selectedDateDropdown = document.getElementById('selected_date');
+            var selectedDate = selectedDateDropdown.options[selectedDateDropdown.selectedIndex].value;
+            var userId = document.getElementById('user').value;
+            console.log("here! 4")
+            document.getElementById('hidden_selected_date').value = selectedDate;
 
-            // Convert userDates to JSON format
-            var userDatesJSON = JSON.stringify(userDates);
-
-            // Make an AJAX request to get common_dates for the selected user
             var xhr = new XMLHttpRequest();
-            xhr.open('GET', '/get_common_dates/' + selectedUserId + '?user_dates=' + userDatesJSON, true);
+            console.log("here! 2")
+            xhr.open('POST', '/update_content', true);
+            console.log("here! 3")
+            xhr.setRequestHeader('Content-Type', 'application/json');
+
+            xhr.send(JSON.stringify({ selectedUserId: selectedUserId, selectedDate: selectedDate, userId: userId }));
 
             xhr.onload = function () {
                 if (xhr.status === 200) {
-                    // Parse the response JSON
-                    var commonDates = JSON.parse(xhr.responseText);
-
-                    // Update the options in the dates dropdown
-                    var dateDropdown = document.getElementById('selected_date');
-                    dateDropdown.innerHTML = ''; // Clear existing options
-
-                    // Add 'Overall Comparison' option
-                    var overallOption = document.createElement('option');
-                    overallOption.value = 'overall';
-                    overallOption.text = 'Overall Comparison';
-                    dateDropdown.appendChild(overallOption);
-
-                    // Add options for common dates
-                    for (var i = 0; i < commonDates.length; i++) {
-                        var dateOption = document.createElement('option');
-                        dateOption.value = commonDates[i];
-                        dateOption.text = commonDates[i];
-                        dateDropdown.appendChild(dateOption);
-                    }
+                    console.log("here! 1")
+                    document.getElementById('runs-data').innerHTML = xhr.responseText;
                 }
             };
-
-            xhr.send();
         }
+
     </script>
 {% endblock %}
