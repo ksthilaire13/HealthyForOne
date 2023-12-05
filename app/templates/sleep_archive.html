@@ -1,13 +1,15 @@
 {% extends "base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
     {% block app_content %}
+        <div class="col-md-12 text-center mt-5">
     <h2>List of User Sleeps</h2>
     {% for sleep in sleeps %}
-        <div><a href="{{ url_for('sleep_display', sleep_id = sleep.id) }}">{{ "Date:", sleep.date, "Wake Up Time:", sleep.wake_up, "Bedtime:", sleep.bedtime}}</a></div>
+        <div><a href="{{ url_for('sleep_display', sleep_id = sleep.id) }}"><button class="btn btn-primary"> Date: {{sleep.date}}, Wake Up Time: {{ sleep.wake_up}}, Bedtime: {{sleep.bedtime}}</button></a></div>
         <br>
     {% endfor %}
     {% if sleeps_count < 1 %}
         <h3>Sorry! there is no sleeps for this user...</h3>
     {% endif %}
         <h3><a href="{{ url_for('day_display') }}">Home</a></h3>
+        </div>
 {% endblock %}

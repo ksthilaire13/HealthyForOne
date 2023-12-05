@@ -2,6 +2,7 @@
 {% import 'bootstrap/wtf.html' as wtf %}
     {% block app_content %}
         <div class="col-md-12 text-center mt-5">
+        <h2> {{ quote }}</h2>
         <h3>{{ datetime.today().date() }}</h3>
         <br>
         {% if num_runs > 0 %}

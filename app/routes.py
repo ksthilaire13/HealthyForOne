@@ -7,6 +7,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from app.models import User, Run, Sleep
 from app.reset import reset_data
 from app.formulas import run_trend, sleep_trend, item_suggest, sum_function, avg_function
+import requests
 import json
 import os
 
@@ -252,10 +253,21 @@ def day_display():
 
     user_sleep = user_sleeps[0] if num_sleeps > 0 else None
 
+    api_url = "https://zenquotes.io/api/random"
+    response = requests.get(api_url)
+
+    if response.status_code == 200:
+        quote_data = response.json()[0]
+        quote = quote_data['q']
+        author = quote_data['a']
+        todaysQuote = f'"{quote}" - {author}'
+    else:
+        return "Failed to fetch a quote"
+
     return render_template('day_display.html', title='Day Display', user_sleep=user_sleep, time=time,
                            distance=distance, avg_pace=avg_pace, effort=effort, temp=temp, time_of_day=time_of_day,
                            notes=notes, score=score, num_sleeps=num_sleeps, num_runs=num_runs, user=current_user,
-                           datetime=datetime, sleep_trend=sleep_trend)
+                           datetime=datetime, sleep_trend=sleep_trend, quote=todaysQuote)
 
 
 @app.route('/run_display/<run_id>')
