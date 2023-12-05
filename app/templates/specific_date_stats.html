@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>YOUTTTT</title>
-</head>
-<body>
-
-</body>
-</html>
+{% if len(user_runs) > 2 and len(selected_user_runs) > 2 %}
+    <h3>{{ user.username }} VERSUS {{ selected_user.username }}</h3>
+    <h4> Miles: {{ sum_function(user_runs, "distance", user) }} VS. {{ sum_function(selected_user_runs, "distance", selected_user) }}</h4>
+    <h4> Time: {{ sum_function(user_runs, "duration", user) }} VS. {{ sum_function(selected_user_runs, "duration", selected_user) }}</h4>
+    <h4> Avg Pace: {{ avg_function(user_runs, "pace", user) }} VS. {{ avg_function(selected_user_runs, "pace", selected_user) }}</h4>
+    <h4> Effort: {{ avg_function(user_runs, "effort", user) }} VS. {{ avg_function(selected_user_runs, "effort", selected_user) }}</h4>
+    <h4> Run Score: {{ avg_function(user_runs, "run_score", user) }} VS. {{ avg_function(selected_user_runs, "run_score", selected_user) }}</h4>
+{% else %}
+    <h4> cant compare cause there's not enough data for one of the users (user needs a minimum of 3 runs)</h4>
+{% endif %}

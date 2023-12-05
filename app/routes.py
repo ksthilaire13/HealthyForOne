@@ -1,13 +1,14 @@
 from datetime import timedelta, datetime
 from sqlalchemy import func
 from app import app, db
-from flask import render_template, redirect, url_for, flash, request, jsonify
+from flask import render_template, redirect, url_for, flash, request, jsonify, render_template_string
 from app.forms import LoginForm, RegistrationForm, SleepForm, RunForm
 from flask_login import login_user, logout_user, current_user, login_required
 from app.models import User, Run, Sleep
 from app.reset import reset_data
 from app.formulas import run_trend, sleep_trend, item_suggest, sum_function, avg_function
 import json
+import os
 
 
 @app.route('/')
@@ -178,24 +179,26 @@ def compare():
 
     return render_template('compare.html', user=user, other_users=other_users, selected_user=selected_user,
                            common_dates=common_dates, selected_date=selected_date, user_runs=user_runs,
-                           selected_user_runs=selected_user_runs, user_dates=user_dates,
+                           selected_user_runs=selected_user_runs, user_dates=user_dates, len=len,
                            selected_user_dates=selected_user_dates, avg_function=avg_function, sum_function=sum_function)
 
 
 @app.route('/update_content', methods=['POST'])
 def update_content():
-    print("made it here 1")
     selected_date = request.form.get('selected_date')
-    print("type 2:", selected_date)
+    compare_dates = "dates compare"
+    compare_overall = "compare overall"
+    # with open('/app/templates/base.html', 'r') as file:
+    #     html_content = file.read()
+    #     print(html_content)
 
-    # Example: Render a template based on the selected_date
     if selected_date == 'overall':
         print("overall stats tempy")
-        return jsonify({"content": "<h4>Updated Content Goes Here</h4>"})
+        return jsonify({"content": compare_overall})
     else:
         print("specic stat sempy")
-        # Render a template or return data based on the selected_date
-        return jsonify({"content": "<h4>Updated Content Goes Here pt2</h4>"})
+        return jsonify({"content": compare_dates})
+
 
 @app.route('/runs_archive')
 @login_required
