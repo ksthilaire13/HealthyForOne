@@ -2,7 +2,7 @@
 {% block content %}
     <form method="post" action="{{ url_for('compare') }}" autocomplete="off" id="user-form">
         <label for="selected_user">Select user to compare:</label>
-        <select name="selected_user" id="selected_user" onchange="updateDisplay();">
+        <select name="selected_user" id="selected_user">
             {% for other_user in other_users %}
                 <option value="{{ other_user.id }}" {% if selected_user and selected_user.id == other_user.id %}selected{% endif %}>
                     {{ other_user.username }}
@@ -13,17 +13,13 @@
         <button type="submit" name="submit_user">Compare by User</button>
 
         <label for="selected_date">Select date to compare:</label>
-            <select name="selected_date" id="selected_date" onchange="updateDisplay();">
-                <option value="overall" {% if selected_date == 'overall' %}selected{% endif %}>Overall Comparison</option>
-                {% for date in common_dates %}
-                    <option value="{{ date }}" {% if selected_date == date %}selected{% endif %}>{{ date }}</option>
-                {% endfor %}
-            </select>
-
-        <input type="hidden" name="selected_date" id="hidden_selected_date" value="{{ selected_date }}">
-        <input type="hidden" name="selected_user" id="hidden_selected_user" value="{{ selected_user.id }}">
-
-        <button type="submit" name="submit_date">Submit Date</button>
+        <!-- Add onchange event to selected_date dropdown -->
+        <select name="selected_date" id="selected_date" onchange="updateSelectedDate()">
+            <option value="overall" {% if selected_date == 'overall' %}selected{% endif %}>Overall Comparison</option>
+            {% for date in common_dates %}
+                <option value="{{ date }}" {% if selected_date == date %}selected{% endif %}>{{ date }}</option>
+            {% endfor %}
+        </select>
     </form>
 
     <h4>Runs of {{ user.username }}:</h4>
@@ -50,7 +46,8 @@
     <div id="runs-data">
         {% if selected_date == 'overall' %}
             <h4>Overall Stats:</h4>
-        {% else %}
+        {% elif selected_date in common_dates %}
+            <h2>hey</h2>
             <h4>Runs on {{ selected_date }}:</h4>
             <ul>
                 {% for run in user_runs %}
@@ -74,30 +71,21 @@
 
     <h3><a href="{{ url_for('day_display') }}">Home</a></h3>
 
-    <script>
-        function updateDisplay() {
-            var selectedUserId = document.getElementById('selected_user').value;
-            var selectedDateDropdown = document.getElementById('selected_date');
-            var selectedDate = selectedDateDropdown.options[selectedDateDropdown.selectedIndex].value;
-            var userId = document.getElementById('user').value;
-            console.log("here! 4")
-            document.getElementById('hidden_selected_date').value = selectedDate;
+    <!-- Add this script at the end of your HTML, before the closing </body> tag -->
+<script>
+    function updateSelectedDate() {
+        var selectedDate = document.getElementById("selected_date").value;
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('update_content') }}",
+            data: {selected_date: selectedDate},
+            success: function (response) {$("#runs-data").html(response);},
+            error: function (error) {console.log("Error updating selected date:", error);}
+        });
+    }
 
-            var xhr = new XMLHttpRequest();
-            console.log("here! 2")
-            xhr.open('POST', '/update_content', true);
-            console.log("here! 3")
-            xhr.setRequestHeader('Content-Type', 'application/json');
+</script>
 
-            xhr.send(JSON.stringify({ selectedUserId: selectedUserId, selectedDate: selectedDate, userId: userId }));
 
-            xhr.onload = function () {
-                if (xhr.status === 200) {
-                    console.log("here! 1")
-                    document.getElementById('runs-data').innerHTML = xhr.responseText;
-                }
-            };
-        }
 
-    </script>
 {% endblock %}

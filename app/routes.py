@@ -182,37 +182,20 @@ def compare():
                            selected_user_dates=selected_user_dates)
 
 
-@app.route('/get_common_dates/<int:selected_user_id>')
-def get_common_dates(selected_user_id):
-    print("made it here 2")
-    user_dates_param = request.args.get('user_dates')
-    user_dates = json.loads(user_dates_param) if user_dates_param else []
-    selected_user_runs = Run.query.filter_by(id=selected_user_id)
-    common_dates = []
-    selected_user_dates = []
-    for run in selected_user_runs:
-        if run.date not in selected_user_dates:
-            selected_user_dates.append(run.date)
-    for date in user_dates:
-        if date in selected_user_dates:
-            common_dates.append(date)
-    return jsonify(common_dates)
-
-
 @app.route('/update_content', methods=['POST'])
 def update_content():
     print("made it here 1")
-    data = request.json
-    selected_user_id = data.get('selectedUserId')
-    user_id = data.get('userId')
-    selected_date = data.get('selectedDate')
+    selected_date = request.form.get('selected_date')
+    print("type 2:", selected_date)
 
     # Example: Render a template based on the selected_date
     if selected_date == 'overall':
-        return render_template('overall_stats.html')
+        print("overall stats tempy")
+        return jsonify({"content": "<h4>Updated Content Goes Here</h4>"})
     else:
+        print("specic stat sempy")
         # Render a template or return data based on the selected_date
-        return render_template('specific_date_stats.html')
+        return jsonify({"content": "<h4>Updated Content Goes Here pt2</h4>"})
 
 @app.route('/runs_archive')
 @login_required
