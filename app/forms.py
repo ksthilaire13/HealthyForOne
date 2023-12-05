@@ -35,7 +35,7 @@ class RegistrationForm(FlaskForm):
 class RunForm(FlaskForm):
     date = DateField('Date', validators=[DataRequired()], format='%Y-%m-%d')
     distance = FloatField('Distance (in miles)', validators=[DataRequired(), NumberRange(min=0)])
-    hours = IntegerField('Hours', validators=[DataRequired(), NumberRange(min=0)])
+    hours = IntegerField('Hours', validators=[NumberRange(min=0)])
     minutes = IntegerField('Minutes', validators=[DataRequired(), NumberRange(min=0, max=59)])
     seconds = IntegerField('Seconds', validators=[DataRequired(), NumberRange(min=0, max=59)])
     temperature = IntegerField('Temperature', validators=[NumberRange(min=-100, max=130)])
