@@ -32,7 +32,7 @@ create table run
 );
 
 
-create table venues
+create table sleep
 (
     sleep_id          integer not null
         constraint sleep_pk

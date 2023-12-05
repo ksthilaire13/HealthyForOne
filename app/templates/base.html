@@ -8,16 +8,23 @@
 {% endblock %}
 {% block navbar %}
     <nav class="navbar navbar-default">
-        <div>
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
             {% if current_user.is_anonymous %}
-            <b><a href="{{ url_for('main') }}">HealthyForOne:</a></b>
-            <a href="{{ url_for('login') }}">Login</a>
+            <b><a href="{{ url_for('main') }}">HealthyForOne&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></b>
+            <a href="{{ url_for('login') }}"><button class="btn btn-primary">Log In</button>               </a>
             {% else %}
-            <b><a href="{{ url_for('day_display') }}">HealthyForOne:</a></b>
-            <a href="{{ url_for('runs_archive') }}">Runs Archive</a>
-            <a href="{{ url_for('sleep_archive') }}">Sleep Archive</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
-            <a href="{{ url_for('user_info', name = current_user.username) }}">User Profile</a>
+            <b><a href="{{ url_for('day_display') }}">Day Display: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></b>
+            <a href="{{ url_for('runs_archive') }}">Runs Archive   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        </a>
+            <a href="{{ url_for('sleep_archive') }}">Sleep Archive &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        </a>
+            <a href="{{ url_for('logout') }}">Logout &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+            <a href="{{ url_for('user_info', name = current_user.username) }}">User Profile&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
             {% endif %}
         </div>
     </nav>

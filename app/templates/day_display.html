@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
     {% block app_content %}
+        <div class="col-md-12 text-center mt-5">
         <h3>{{ datetime.today().date() }}</h3>
         <br>
         {% if num_runs > 0 %}
@@ -27,7 +28,8 @@
         {% else %}
             <h5>No sleep data available for today.</h5>
         {% endif %}
-        <h3><a href="{{ url_for('register_run') }}">Register Run</a>
-            <a href="{{ url_for('compare', otherName=otherName) }}">Compare Athletes</a>
-            <a href="{{ url_for('register_sleep') }}">Register Sleep</a></h3>
+        <h3><a href="{{ url_for('register_run') }}"><button class="btn btn-primary">Register Run&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button></a>
+            <a href="{{ url_for('compare', otherName=otherName) }}"><button class="btn btn-primary"> Compare with Other Users &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button></a>
+            <a href="{{ url_for('register_sleep') }}"><button class="btn btn-primary">Register Sleep&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button></a></h3>
+        </div>
     {% endblock %}
