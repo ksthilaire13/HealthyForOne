@@ -291,10 +291,16 @@ def user_info():
         return redirect(url_for('main'))
     user_runs = Run.query.filter_by(user_id=current_user.id).all()
     user_sleeps = Sleep.query.filter_by(user_id=current_user.id).all()
-    total_miles = sum_function(user_runs, "distance", current_user)
-    total_time = sum_function(user_runs, "duration", current_user)
-    overall_avg_pace = avg_function(user_runs, "pace", current_user)
-    total_sleep_time = sum_function(user_sleeps, "sleep_duration", current_user)
+    if len(user_runs) > 0:
+        total_miles = sum_function(user_runs, "distance", current_user)
+        total_time = sum_function(user_runs, "duration", current_user)
+        overall_avg_pace = avg_function(user_runs, "pace", current_user)
+    else:
+        total_miles = "none"
+        total_time = "none"
+        overall_avg_pace = "none"
+    if len(user_sleeps) > 0:
+        total_sleep_time = sum_function(user_sleeps, "sleep_duration", current_user)
     avg_run_score = avg_function(user_runs, "run_score", current_user)
     avg_sleep_score = avg_function(user_sleeps, "sleep_score", current_user)
     return render_template('user_info.html', user=current_user, total_miles=total_miles,
