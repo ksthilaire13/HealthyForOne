@@ -22,13 +22,14 @@
         </select>
     </form>
 
-    <h4>Runs of {{ user.username }}:</h4>
-    <ul>
-        {% for run in user_runs %}
-            <li>{{ run.date }} - Distance: {{ run.distance }} km, Duration: {{ run.duration }} </li>
-        {% endfor %}
-    </ul>
     {% if selected_user %}
+        <h3>{{ user.username }} VERSUS {{ selected_user.username }}</h3>
+        <h4> Miles: {{ sum_function(user_runs, "distance", user) }} VS. {{ sum_function(selected_user_runs, "distance", selected_user) }}</h4>
+        <h4> Time: {{ sum_function(user_runs, "duration", user) }} VS. {{ sum_function(selected_user_runs, "duration", selected_user) }}</h4>
+        <h4> Avg Pace: {{ avg_function(user_runs, "pace", user) }} VS. {{ avg_function(selected_user_runs, "pace", selected_user) }}</h4>
+        <h4> Effort: {{ avg_function(user_runs, "effort", user) }} VS. {{ avg_function(selected_user_runs, "effort", selected_user) }}</h4>
+        <h4> Run Score: {{ avg_function(user_runs, "run_score", user) }} VS. {{ avg_function(selected_user_runs, "run_score", selected_user) }}</h4>
+        <br>
         <h4>Runs of {{ selected_user.username }}:</h4>
         <ul>
             {% for run in selected_user_runs %}
@@ -36,6 +37,13 @@
             {% endfor %}
         </ul>
     {% endif %}
+
+    <h4>Runs of {{ user.username }}:</h4>
+    <ul>
+        {% for run in user_runs %}
+            <li>{{ run.date }} - Distance: {{ run.distance }} km, Duration: {{ run.duration }} </li>
+        {% endfor %}
+    </ul>
 
     {% if selected_date %}
         <h4>Comparison for: {{ selected_date }}</h4>

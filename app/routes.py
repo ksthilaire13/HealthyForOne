@@ -143,7 +143,7 @@ def compare():
         return redirect(url_for('main'))
 
     user = current_user
-    user_runs = Run.query.filter_by(user_id=current_user.id)
+    user_runs = Run.query.filter_by(user_id=current_user.id).all()
     other_users = User.query.filter(User.username != user.username).all()
     selected_user = None
     selected_date = 'overall'
@@ -179,7 +179,7 @@ def compare():
     return render_template('compare.html', user=user, other_users=other_users, selected_user=selected_user,
                            common_dates=common_dates, selected_date=selected_date, user_runs=user_runs,
                            selected_user_runs=selected_user_runs, user_dates=user_dates,
-                           selected_user_dates=selected_user_dates)
+                           selected_user_dates=selected_user_dates, avg_function=avg_function, sum_function=sum_function)
 
 
 @app.route('/update_content', methods=['POST'])
