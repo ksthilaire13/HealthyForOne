@@ -91,7 +91,7 @@
             url: "{{ url_for('update_content') }}",
             data: {selected_date: selectedDate},
             success: function (response) {
-                $("#runs-data").html(response.content);  // Access the 'content' key
+                $("#runs-data").html(response.content);
             },
             error: function (error) {
                 console.log("Error updating selected date:", error);
