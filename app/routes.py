@@ -82,10 +82,20 @@ def register_run():
         return redirect(url_for('main'))
     form = RunForm()
     if form.validate_on_submit():
-        if form.hours.data == 0:
-            duration_calc = timedelta(minutes=form.minutes.data, seconds=form.seconds.data)
-        else:
+        if form.hours.data != 0 and form.minutes.data != 0 and form.seconds.data != 0:
             duration_calc = timedelta(hours=form.hours.data, minutes=form.minutes.data, seconds=form.seconds.data)
+        elif form.hours.data != 0 and form.minutes.data != 0 and form.seconds.data == 0:
+            duration_calc = timedelta(hours=form.hours.data, minutes=form.minutes.data)
+        elif form.hours.data != 0 and form.minutes.data == 0 and form.seconds.data != 0:
+            duration_calc = timedelta(minutes=form.hours.data, seconds=form.seconds.data)
+        elif form.hours.data != 0 and form.minutes.data == 0 and form.seconds.data == 0:
+            duration_calc = timedelta(hours=form.hours.data)
+        elif form.hours.data == 0 and form.minutes.data != 0 and form.seconds.data == 0:
+            duration_calc = timedelta(minutes=form.minutes.data)
+        elif form.hours.data == 0 and form.minutes.data == 0 and form.seconds.data != 0:
+            duration_calc = timedelta(seconds=form.seconds.data)
+        else:
+            duration_calc = timedelta(0)
         run = Run(
             date=form.date.data,
             distance=form.distance.data,
