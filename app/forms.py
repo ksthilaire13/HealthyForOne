@@ -32,6 +32,14 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Please use a different email address.')
 
 
+class EditUserForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    name = StringField('Name')
+    bio = TextAreaField('bio')
+    submit = SubmitField('Save Changes', validators=[Length(max=500)])
+
+
 class RunForm(FlaskForm):
     date = DateField('Date', validators=[DataRequired()], format='%Y-%m-%d')
     distance = FloatField('Distance (in miles)', validators=[DataRequired(), NumberRange(min=0.01)])

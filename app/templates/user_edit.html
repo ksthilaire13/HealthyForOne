@@ -1,1 +1,31 @@
-{% extends base.html %}
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% block app_content %}
+    <h1>Edit User Profile</h1>
+    <form method="post" action="{{ url_for('edit_user') }}" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div>{{ form.username.label }}: {{ form.username() }}</div>
+        {% if form.username.errors %}
+            <div class="alert alert-danger">
+                {{ form.username.errors|join(', ') }}
+            </div>
+        {% endif %}
+
+        <div>{{ form.email.label }}: {{ form.email() }}</div>
+        {% if form.email.errors %}
+            <div class="alert alert-danger">
+                {{ form.email.errors|join(', ') }}
+            </div>
+        {% endif %}
+
+        <div>{{ form.name.label }}: {{ form.name() }}</div>
+        <div>{{ form.bio.label }}: {{ form.bio() }}</div>
+
+
+
+        <div>
+            <button type="submit">Save Changes</button>
+        </div>
+    </form>
+{% endblock %}

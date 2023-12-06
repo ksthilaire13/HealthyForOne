@@ -2,7 +2,7 @@ from datetime import timedelta, datetime
 from sqlalchemy import func
 from app import app, db
 from flask import render_template, redirect, url_for, flash, request, jsonify, render_template_string
-from app.forms import LoginForm, RegistrationForm, SleepForm, RunForm
+from app.forms import LoginForm, RegistrationForm, SleepForm, RunForm, EditUserForm
 from flask_login import login_user, logout_user, current_user, login_required
 from app.models import User, Run, Sleep
 from app.reset import reset_data
@@ -85,14 +85,10 @@ def register_run():
     form.minutes.data = 0
     form.seconds.data = 0
 
-    print("it does")
-
     if form.validate_on_submit():
-        print("made it")
         hours = form.hours.data or 0
         minutes = form.minutes.data or 0
         seconds = form.seconds.data or 0
-        print(hours, minutes, seconds)
         if hours != 0 and minutes != 0 and seconds != 0:
             duration_calc = timedelta(hours=form.hours.data, minutes=form.minutes.data, seconds=form.seconds.data)
         elif form.hours.data != 0 and form.minutes.data != 0 and form.seconds.data == 0:
@@ -122,7 +118,6 @@ def register_run():
         db.session.commit()
         flash('Run submitted successfully!')
         return redirect(url_for('day_display'))
-    print("Form errors:", form.errors)
     return render_template('registers/register_run.html', title='Submit Run', form=form)
 
 
@@ -348,3 +343,40 @@ def user_info():
     return render_template('user_info.html', user=current_user, total_miles=total_miles,
                            total_time=total_time, overall_avg_pace=overall_avg_pace, total_sleep_time=total_sleep_time,
                            avg_run_score=avg_run_score, avg_sleep_score=avg_sleep_score)
+
+
+@app.route('/edit_user', methods=['GET', 'POST'])
+@login_required
+def edit_user():
+    if not current_user.is_authenticated:
+        return redirect(url_for('main'))
+
+    form = EditUserForm()
+
+    if form.validate_on_submit():
+        existing_email_user = User.query.filter(User.email == form.email.data, User.id != current_user.id).first()
+        if existing_email_user:
+            flash('Email is already in use. Please choose a different one.', 'error')
+        else:
+            existing_username_user = User.query.filter(User.username == form.username.data, User.id != current_user.id).first()
+            if existing_username_user:
+                flash('Username is already in use. Please choose a different one.', 'error')
+            else:
+                current_user.username = form.username.data
+                current_user.email = form.email.data
+                current_user.name = form.name.data
+                current_user.bio = form.bio.data
+                db.session.commit()
+
+                return redirect(url_for('user_info'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+        form.name.data = current_user.name
+        form.bio.data = current_user.bio
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f'{field.capitalize()}: {error}', 'error')
+
+    return render_template('user_edit.html', form=form)
