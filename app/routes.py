@@ -226,8 +226,9 @@ def update_content():
                                selected_user_runs=selected_user_runs, len=len, avg_function=avg_function,
                                sum_function=sum_function)
     else:
-        print("specic stat sempy")
-        return jsonify({"content": compare_dates})
+        return render_template('specific_date_stats.html', user=user, selected_user=selected_user, user_runs=user_runs,
+                               selected_user_runs=selected_user_runs, selected_date=selected_date, len=len,
+                               avg_function=avg_function, sum_function=sum_function)
 
 
 @app.route('/runs_archive')

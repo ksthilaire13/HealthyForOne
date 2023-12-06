@@ -1,3 +1,4 @@
+<h1>COMPARE {{ selected_date }} STATS:</h1>
 {% if len(user_runs) > 2 and len(selected_user_runs) > 2 %}
     <h3>{{ user.username }} VERSUS {{ selected_user.username }}</h3>
     <h4> Miles: {{ sum_function(user_runs, "distance", user) }} VS. {{ sum_function(selected_user_runs, "distance", selected_user) }}</h4>
