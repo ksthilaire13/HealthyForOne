@@ -1,11 +1,51 @@
+<div>
 <h1>COMPARE {{ selected_date }} STATS:</h1>
 {% if len(user_runs) > 2 and len(selected_user_runs) > 2 %}
     <h3>{{ user.username }} VERSUS {{ selected_user.username }}</h3>
-    <h4> Miles: {{ sum_function(user_runs, "distance", user) }} VS. {{ sum_function(selected_user_runs, "distance", selected_user) }}</h4>
-    <h4> Time: {{ sum_function(user_runs, "duration", user) }} VS. {{ sum_function(selected_user_runs, "duration", selected_user) }}</h4>
-    <h4> Avg Pace: {{ avg_function(user_runs, "pace", user) }} VS. {{ avg_function(selected_user_runs, "pace", selected_user) }}</h4>
-    <h4> Effort: {{ avg_function(user_runs, "effort", user) }} VS. {{ avg_function(selected_user_runs, "effort", selected_user) }}</h4>
-    <h4> Run Score: {{ avg_function(user_runs, "run_score", user) }} VS. {{ avg_function(selected_user_runs, "run_score", selected_user) }}</h4>
+    <h4> Miles: {{ sum_function(user_runs, "distance", user) }}
+        {% if sum_function(the_user_run, "distance", user) > sum_function(the_selected_user_run, "distance", selected_user) %}
+            <<<
+        {% else %}
+            >>>
+        {% endif %}
+        {{ sum_function(selected_user_runs, "distance", selected_user) }}</h4>
+    <h4> Time: {{ sum_function(user_runs, "duration", user) }}
+        {% if sum_function(the_user_run, "duration", user) > sum_function(the_selected_user_run, "duration", selected_user) %}
+            <<<
+        {% elif sum_function(the_user_run, "duration", user) < sum_function(the_selected_user_run, "duration", selected_user) %}
+            >>>
+        {% else %}
+            ---
+        {% endif %}
+        {{ sum_function(the_selected_user_run, "duration", selected_user) }}</h4>
+    <h4> Avg Pace: {{ avg_function(the_user_run, "pace", user) }}
+        {% if avg_function(the_user_run, "pace", user) > avg_function(the_selected_user_run, "pace", selected_user) %}
+            <<<
+        {% elif avg_function(the_user_run, "pace", user) < avg_function(the_selected_user_run, "pace", selected_user) %}
+            >>>
+        {% else %}
+            ---
+        {% endif %}
+        {{ avg_function(the_selected_user_run, "pace", selected_user) }}</h4>
+    <h4> Effort: {{ avg_function(the_user_run, "effort", user) }}
+        {% if avg_function(the_user_run, "effort", user) > avg_function(the_selected_user_run, "effort", selected_user) %}
+            <<<
+        {% elif avg_function(the_user_run, "effort", user) < avg_function(the_selected_user_run, "effort", selected_user) %}
+            >>>
+        {% else %}
+            ---
+        {% endif %}
+        {{ avg_function(the_selected_user_run, "effort", selected_user) }}</h4>
+    <h4> Run Score: {{ avg_function(the_user_run, "compare", user) }}
+        {% if avg_function(the_user_run, "compare", user) > avg_function(the_selected_user_run, "compare", selected_user) %}
+            <<<
+        {% elif avg_function(the_user_run, "compare", user) < avg_function(the_selected_user_run, "compare", selected_user) %}
+            >>>
+        {% else %}
+            ---
+        {% endif %}
+        {{ avg_function(the_selected_user_run, "compare", selected_user) }}</h4>
 {% else %}
-    <h4> cant compare cause there's not enough data for one of the users (user needs a minimum of 3 runs)</h4>
+    <h4> cant compare cause there is no similar data</h4>
 {% endif %}
+</div>

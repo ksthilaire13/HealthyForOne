@@ -175,7 +175,7 @@ def compare():
     user_runs = Run.query.filter_by(user_id=current_user.id).all()
     other_users = User.query.filter(User.username != user.username).all()
     selected_user = None
-    selected_date = 'overall'
+    selected_date = None
     selected_user_runs = None
     common_dates = []
     user_dates = []
@@ -187,8 +187,6 @@ def compare():
 
     if request.method == 'POST':
         if 'submit_user' in request.form:
-            # Handle user comparison
-            print("made it here 3")
             selected_user_id = request.form.get('selected_user')
             selected_user = User.query.get(selected_user_id)
             selected_user_runs = Run.query.filter_by(user_id=selected_user.id).all()
@@ -203,12 +201,12 @@ def compare():
 
         if 'submit_date' in request.form:
             selected_date = request.form.get('selected_date')
-            print("Selected Date:", selected_date)
 
     return render_template('compare.html', user=user, other_users=other_users, selected_user=selected_user,
                            common_dates=common_dates, selected_date=selected_date, user_runs=user_runs,
                            selected_user_runs=selected_user_runs, user_dates=user_dates, len=len,
-                           selected_user_dates=selected_user_dates, avg_function=avg_function, sum_function=sum_function)
+                           selected_user_dates=selected_user_dates, avg_function=avg_function,
+                           sum_function=sum_function)
 
 
 @app.route('/update_content', methods=['POST'])
@@ -219,8 +217,9 @@ def update_content():
     selected_user = User.query.filter_by(id=selected_user_id).first()
     user_runs = Run.query.filter_by(user_id=current_user.id).all()
     selected_user_runs = Run.query.filter_by(user_id=selected_user_id).all()
+    the_user_run = Run.query.filter_by(user_id=user.id, date=selected_date).all()
+    the_selected_user_run = Run.query.filter_by(user_id=selected_user.id, date=selected_date).all()
 
-    compare_dates = "dates compare"
     if selected_date == 'overall':
         return render_template('overall_stats.html', user=user, selected_user=selected_user, user_runs=user_runs,
                                selected_user_runs=selected_user_runs, len=len, avg_function=avg_function,
@@ -228,7 +227,8 @@ def update_content():
     else:
         return render_template('specific_date_stats.html', user=user, selected_user=selected_user, user_runs=user_runs,
                                selected_user_runs=selected_user_runs, selected_date=selected_date, len=len,
-                               avg_function=avg_function, sum_function=sum_function)
+                               avg_function=avg_function, sum_function=sum_function, the_user_run=the_user_run,
+                               the_selected_user_run=the_selected_user_run)
 
 
 @app.route('/runs_archive')

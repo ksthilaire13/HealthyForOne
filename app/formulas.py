@@ -139,7 +139,7 @@ def sum_function(item_list, parameter, user):
         total = item_list[0].duration() - item_list[0].duration()
         for item in item_list:
             total = total + item.duration()
-    elif parameter in ["run_score", "run_scores"]:
+    elif parameter in ["run_score", "run_scores", "compare"]:
         total = 0
         for item in item_list:
             if run_trend(item, user) != "Cannot be calculated yet":

@@ -4,6 +4,7 @@
     <form method="post" action="{{ url_for('compare') }}" autocomplete="off" id="user-form">
         <label for="selected_user">Select user to compare:</label>
         <select name="selected_user" id="selected_user">
+            <option value="none_selected" {% if selected_user == None  %}selected{% endif %}>Select a User</option>
             {% for other_user in other_users %}
                 <option value="{{ other_user.id }}" {% if selected_user and selected_user.id == other_user.id %}selected{% endif %}>
                     {{ other_user.username }}
@@ -14,8 +15,8 @@
         <button type="submit" name="submit_user">Compare by User</button>
 
         <label for="selected_date">Select date to compare:</label>
-        <!-- Add onchange event to selected_date dropdown -->
         <select name="selected_date" id="selected_date" onchange="updateSelectedDate()">
+            <option value="overall" {% if selected_date == None %}selected{% endif %}>Select Compare Type</option>
             <option value="overall" {% if selected_date == 'overall' %}selected{% endif %}>Overall Comparison</option>
             {% for date in common_dates %}
                 <option value="{{ date }}" {% if selected_date == date %}selected{% endif %}>{{ date }}</option>
@@ -23,17 +24,20 @@
         </select>
     </form>
 
-    <div id="runs-data">Select User and Date/Stat type to compare against other runers!</div>
+        <div id="runs-data">
+            <h3>Select User and Date/Stat type to compare against other runners!</h3>
+            {% if selected_user != None %}
+                <h5>Your Chosen opponent is {{ selected_user.username }}</h5>
+                <h5>Please choose a comparison type</h5>
+            {% endif %}
+        </div>
 
-    <h3><a href="{{ url_for('day_display') }}">Home</a></h3>
+        <h3><a href="{{ url_for('day_display') }}">Home</a></h3>
     </div>
 <script>
     function updateSelectedDate() {
-        console.log("started")
         var selectedDate = document.getElementById("selected_date").value;
-        console.log("selected date passed")
         var selectedUser = document.getElementById("selected_user").value;
-        console.log("selected_user passed")
         $.ajax({
             type: "POST",
             url: "{{ url_for('update_content') }}",
@@ -47,8 +51,6 @@
                 }
             });
         }
-
-
 </script>
 
 
