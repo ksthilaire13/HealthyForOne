@@ -12,6 +12,11 @@
                     </div>
                 {% endif %}
                <div>{{ form.distance.label }}: {{ form.distance() }}</div>
+                    {% if form.distance.data == 0 %}
+                        <div class="alert alert-danger">
+                            Distance cannot be 0.
+                        </div>
+                    {% endif %}
                <div>{{ form.hours.label }}: {{ form.hours() }}  {{ form.minutes.label }}: {{ form.minutes() }}
                          {{ form.seconds.label }}: {{ form.seconds() }}</div>
                     {% if form.hours.data == 0 and form.minutes.data == 0 and form.seconds.data == 0 %}

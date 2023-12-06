@@ -42,11 +42,15 @@ class RunForm(FlaskForm):
     time_of_day = TimeField('Time of Day', validators=[DataRequired()])
     effort = IntegerField('Effort (1-10)', validators=[NumberRange(min=1, max=10), DataRequired()])
     weather = SelectField('Weather', choices=[('sunny', 'Sunny'), ('cloudy', 'Cloudy'), ('rainy', 'Rainy')])
-    notes = TextAreaField('Notes', validators=[Length(max=200)])
+    notes = TextAreaField('Notes', validators=[Length(max=500)])
 
     def validate_date(self, field):
         if field.data > datetime.now().date():
             raise ValidationError('Date cannot be in the future.')
+
+    def validate_distance(self, field):
+        if field.data == 0:
+            raise ValidationError('Distance cannot be 0')
 
     def validate_time_of_day(self, field):
         entered_date = self.date.data
@@ -67,7 +71,6 @@ class RunForm(FlaskForm):
     def _validate_duration(self, field):
         if self.hours.data == self.minutes.data == self.seconds.data == 0:
             raise ValidationError('At least one of hours, minutes, or seconds must be greater than 0.')
-
 
 
 class SleepForm(FlaskForm):

@@ -81,8 +81,19 @@ def register_run():
     if not current_user.is_authenticated:
         return redirect(url_for('main'))
     form = RunForm()
+    form.hours.data = 0
+    form.minutes.data = 0
+    form.seconds.data = 0
+
+    print("it does")
+
     if form.validate_on_submit():
-        if form.hours.data != 0 and form.minutes.data != 0 and form.seconds.data != 0:
+        print("made it")
+        hours = form.hours.data or 0
+        minutes = form.minutes.data or 0
+        seconds = form.seconds.data or 0
+        print(hours, minutes, seconds)
+        if hours != 0 and minutes != 0 and seconds != 0:
             duration_calc = timedelta(hours=form.hours.data, minutes=form.minutes.data, seconds=form.seconds.data)
         elif form.hours.data != 0 and form.minutes.data != 0 and form.seconds.data == 0:
             duration_calc = timedelta(hours=form.hours.data, minutes=form.minutes.data)
@@ -96,6 +107,7 @@ def register_run():
             duration_calc = timedelta(seconds=form.seconds.data)
         else:
             duration_calc = timedelta(0)
+
         run = Run(
             date=form.date.data,
             distance=form.distance.data,
@@ -110,6 +122,7 @@ def register_run():
         db.session.commit()
         flash('Run submitted successfully!')
         return redirect(url_for('day_display'))
+    print("Form errors:", form.errors)
     return render_template('registers/register_run.html', title='Submit Run', form=form)
 
 
@@ -201,15 +214,17 @@ def compare():
 @app.route('/update_content', methods=['POST'])
 def update_content():
     selected_date = request.form.get('selected_date')
-    compare_dates = "dates compare"
-    compare_overall = "compare overall"
-    # with open('/app/templates/base.html', 'r') as file:
-    #     html_content = file.read()
-    #     print(html_content)
+    selected_user_id = request.form.get('selected_user')
+    user = current_user
+    selected_user = User.query.filter_by(id=selected_user_id).first()
+    user_runs = Run.query.filter_by(user_id=current_user.id).all()
+    selected_user_runs = Run.query.filter_by(user_id=selected_user_id).all()
 
+    compare_dates = "dates compare"
     if selected_date == 'overall':
-        print("overall stats tempy")
-        return jsonify({"content": compare_overall})
+        return render_template('overall_stats.html', user=user, selected_user=selected_user, user_runs=user_runs,
+                               selected_user_runs=selected_user_runs, len=len, avg_function=avg_function,
+                               sum_function=sum_function)
     else:
         print("specic stat sempy")
         return jsonify({"content": compare_dates})

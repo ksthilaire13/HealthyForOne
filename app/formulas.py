@@ -117,8 +117,8 @@ def sleep_duration(sleep):
     return duration
 
 
-def avg_function(item_list, parameter, current_user):
-    total = sum_function(item_list, parameter, current_user)
+def avg_function(item_list, parameter, user):
+    total = sum_function(item_list, parameter, user)
     if parameter in ["sleep_score", "run_score"]:
         average = total/(len(item_list)-2)
     else:
@@ -126,7 +126,7 @@ def avg_function(item_list, parameter, current_user):
     return average
 
 
-def sum_function(item_list, parameter, current_user):
+def sum_function(item_list, parameter, user):
     if parameter in ["distance", "effort", "temp", "duration"]:
         total = getattr(item_list[0], parameter, 0) - getattr(item_list[0], parameter, 0)
         for item in item_list:
@@ -142,13 +142,13 @@ def sum_function(item_list, parameter, current_user):
     elif parameter in ["run_score", "run_scores"]:
         total = 0
         for item in item_list:
-            if run_trend(item, current_user) != "Cannot be calculated yet":
-                total = total + run_trend(item, current_user)
+            if run_trend(item, user) != "Cannot be calculated yet":
+                total = total + run_trend(item, user)
     elif parameter == "sleep_score":
         total = 0
         for item in item_list:
-            if sleep_trend(item, current_user) != "Cannot be calculated yet":
-                total = total + sleep_trend(item, current_user)
+            if sleep_trend(item, user) != "Cannot be calculated yet":
+                total = total + sleep_trend(item, user)
     elif parameter in ["time_of_day", "notes"]:
         total = ""
         for item in item_list:
