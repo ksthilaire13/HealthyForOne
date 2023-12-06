@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
+    <div class="col-md-12 text-center mt-5">
     <form method="post" action="{{ url_for('compare') }}" autocomplete="off" id="user-form">
         <label for="selected_user">Select user to compare:</label>
         <select name="selected_user" id="selected_user">
+            <option value="none_selected" {% if selected_user == None  %}selected{% endif %}>Select a User</option>
             {% for other_user in other_users %}
                 <option value="{{ other_user.id }}" {% if selected_user and selected_user.id == other_user.id %}selected{% endif %}>
                     {{ other_user.username }}
@@ -13,8 +15,8 @@
         <button type="submit" name="submit_user">Compare by User</button>
 
         <label for="selected_date">Select date to compare:</label>
-        <!-- Add onchange event to selected_date dropdown -->
         <select name="selected_date" id="selected_date" onchange="updateSelectedDate()">
+            <option value="overall" {% if selected_date == None %}selected{% endif %}>Select Compare Type</option>
             <option value="overall" {% if selected_date == 'overall' %}selected{% endif %}>Overall Comparison</option>
             {% for date in common_dates %}
                 <option value="{{ date }}" {% if selected_date == date %}selected{% endif %}>{{ date }}</option>
@@ -22,84 +24,33 @@
         </select>
     </form>
 
-    {% if selected_user %}
-        {% if len(user_runs) > 2 and len(selected_user_runs) > 2 %}
-            <h3>{{ user.username }} VERSUS {{ selected_user.username }}</h3>
-            <h4> Miles: {{ sum_function(user_runs, "distance", user) }} VS. {{ sum_function(selected_user_runs, "distance", selected_user) }}</h4>
-            <h4> Time: {{ sum_function(user_runs, "duration", user) }} VS. {{ sum_function(selected_user_runs, "duration", selected_user) }}</h4>
-            <h4> Avg Pace: {{ avg_function(user_runs, "pace", user) }} VS. {{ avg_function(selected_user_runs, "pace", selected_user) }}</h4>
-            <h4> Effort: {{ avg_function(user_runs, "effort", user) }} VS. {{ avg_function(selected_user_runs, "effort", selected_user) }}</h4>
-            <h4> Run Score: {{ avg_function(user_runs, "run_score", user) }} VS. {{ avg_function(selected_user_runs, "run_score", selected_user) }}</h4>
-        {% else %}
-            <h4> cant compare cause there's not enough data for one of the users (user needs a minimum of 3 runs)</h4>
-        {% endif %}
-            <br>
-        <h4>Runs of {{ selected_user.username }}:</h4>
-        <ul>
-            {% for run in selected_user_runs %}
-                <li>{{ run.date }} - Distance: {{ run.distance }} km, Duration: {{ run.duration }} </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
-    <h4>Runs of {{ user.username }}:</h4>
-    <ul>
-        {% for run in user_runs %}
-            <li>{{ run.date }} - Distance: {{ run.distance }} km, Duration: {{ run.duration }} </li>
-        {% endfor %}
-    </ul>
-
-    {% if selected_date %}
-        <h4>Comparison for: {{ selected_date }}</h4>
-    {% endif %}
-
-    <h3><a href="{{ url_for('day_display') }}">Home</a></h3>
-
-    <div id="runs-data">
-
-        {% if selected_date == 'overall' %}
-            <h4>Overall Stats:</h4>
-        {% elif selected_date in common_dates %}
-            <h2>hey</h2>
-            <h4>Runs on {{ selected_date }}:</h4>
-            <ul>
-                {% for run in user_runs %}
-                    {% if run.date == selected_date %}
-                        <li>{{ run.date }} - Distance: {{ run.distance }} km, Duration: {{ run.duration }} </li>
-                    {% endif %}
-                {% endfor %}
-            </ul>
-            {% if selected_user %}
-                <h4>Runs of {{ selected_user.username }}:</h4>
-                <ul>
-                    {% for run in selected_user_runs %}
-                        {% if run.date == selected_date %}
-                            <li>{{ run.date }} - Distance: {{ run.distance }} km, Duration: {{ run.duration }} </li>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
+        <div id="runs-data">
+            <h3>Select User and Date/Stat type to compare against other runners!</h3>
+            {% if selected_user != None %}
+                <h5>Your Chosen opponent is {{ selected_user.username }}</h5>
+                <h5>Please choose a comparison type</h5>
             {% endif %}
-        {% endif %}</div>
+        </div>
 
-    <h3><a href="{{ url_for('day_display') }}">Home</a></h3>
-
+        <h3><a href="{{ url_for('day_display') }}">Home</a></h3>
+    </div>
 <script>
     function updateSelectedDate() {
         var selectedDate = document.getElementById("selected_date").value;
+        var selectedUser = document.getElementById("selected_user").value;
         $.ajax({
             type: "POST",
             url: "{{ url_for('update_content') }}",
-            data: {selected_date: selectedDate},
+            data: {selected_date: selectedDate, selected_user: selectedUser},
             success: function (response) {
-                $("#runs-data").html(response.content);  // Access the 'content' key
+                {#$("#runs-data").html(response.content);#}
+                $("#runs-data").html(response);
             },
             error: function (error) {
                 console.log("Error updating selected date:", error);
                 }
             });
         }
-
-
 </script>
 
 

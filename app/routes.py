@@ -7,6 +7,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from app.models import User, Run, Sleep
 from app.reset import reset_data
 from app.formulas import run_trend, sleep_trend, item_suggest, sum_function, avg_function
+import requests
 import json
 import os
 
@@ -80,11 +81,37 @@ def register_run():
     if not current_user.is_authenticated:
         return redirect(url_for('main'))
     form = RunForm()
+    form.hours.data = 0
+    form.minutes.data = 0
+    form.seconds.data = 0
+
+    print("it does")
+
     if form.validate_on_submit():
+        print("made it")
+        hours = form.hours.data or 0
+        minutes = form.minutes.data or 0
+        seconds = form.seconds.data or 0
+        print(hours, minutes, seconds)
+        if hours != 0 and minutes != 0 and seconds != 0:
+            duration_calc = timedelta(hours=form.hours.data, minutes=form.minutes.data, seconds=form.seconds.data)
+        elif form.hours.data != 0 and form.minutes.data != 0 and form.seconds.data == 0:
+            duration_calc = timedelta(hours=form.hours.data, minutes=form.minutes.data)
+        elif form.hours.data != 0 and form.minutes.data == 0 and form.seconds.data != 0:
+            duration_calc = timedelta(minutes=form.hours.data, seconds=form.seconds.data)
+        elif form.hours.data != 0 and form.minutes.data == 0 and form.seconds.data == 0:
+            duration_calc = timedelta(hours=form.hours.data)
+        elif form.hours.data == 0 and form.minutes.data != 0 and form.seconds.data == 0:
+            duration_calc = timedelta(minutes=form.minutes.data)
+        elif form.hours.data == 0 and form.minutes.data == 0 and form.seconds.data != 0:
+            duration_calc = timedelta(seconds=form.seconds.data)
+        else:
+            duration_calc = timedelta(0)
+
         run = Run(
             date=form.date.data,
             distance=form.distance.data,
-            duration=timedelta(hours=form.hours.data, minutes=form.minutes.data, seconds=form.seconds.data),
+            duration=duration_calc,
             temp=form.temperature.data,
             time_of_day=form.time_of_day.data,
             effort=form.effort.data,
@@ -95,6 +122,7 @@ def register_run():
         db.session.commit()
         flash('Run submitted successfully!')
         return redirect(url_for('day_display'))
+    print("Form errors:", form.errors)
     return render_template('registers/register_run.html', title='Submit Run', form=form)
 
 
@@ -147,7 +175,7 @@ def compare():
     user_runs = Run.query.filter_by(user_id=current_user.id).all()
     other_users = User.query.filter(User.username != user.username).all()
     selected_user = None
-    selected_date = 'overall'
+    selected_date = None
     selected_user_runs = None
     common_dates = []
     user_dates = []
@@ -159,8 +187,6 @@ def compare():
 
     if request.method == 'POST':
         if 'submit_user' in request.form:
-            # Handle user comparison
-            print("made it here 3")
             selected_user_id = request.form.get('selected_user')
             selected_user = User.query.get(selected_user_id)
             selected_user_runs = Run.query.filter_by(user_id=selected_user.id).all()
@@ -175,29 +201,34 @@ def compare():
 
         if 'submit_date' in request.form:
             selected_date = request.form.get('selected_date')
-            print("Selected Date:", selected_date)
 
     return render_template('compare.html', user=user, other_users=other_users, selected_user=selected_user,
                            common_dates=common_dates, selected_date=selected_date, user_runs=user_runs,
                            selected_user_runs=selected_user_runs, user_dates=user_dates, len=len,
-                           selected_user_dates=selected_user_dates, avg_function=avg_function, sum_function=sum_function)
+                           selected_user_dates=selected_user_dates, avg_function=avg_function,
+                           sum_function=sum_function)
 
 
 @app.route('/update_content', methods=['POST'])
 def update_content():
     selected_date = request.form.get('selected_date')
-    compare_dates = "dates compare"
-    compare_overall = "compare overall"
-    # with open('/app/templates/base.html', 'r') as file:
-    #     html_content = file.read()
-    #     print(html_content)
+    selected_user_id = request.form.get('selected_user')
+    user = current_user
+    selected_user = User.query.filter_by(id=selected_user_id).first()
+    user_runs = Run.query.filter_by(user_id=current_user.id).all()
+    selected_user_runs = Run.query.filter_by(user_id=selected_user_id).all()
+    the_user_run = Run.query.filter_by(user_id=user.id, date=selected_date).all()
+    the_selected_user_run = Run.query.filter_by(user_id=selected_user.id, date=selected_date).all()
 
     if selected_date == 'overall':
-        print("overall stats tempy")
-        return jsonify({"content": compare_overall})
+        return render_template('overall_stats.html', user=user, selected_user=selected_user, user_runs=user_runs,
+                               selected_user_runs=selected_user_runs, len=len, avg_function=avg_function,
+                               sum_function=sum_function)
     else:
-        print("specic stat sempy")
-        return jsonify({"content": compare_dates})
+        return render_template('specific_date_stats.html', user=user, selected_user=selected_user, user_runs=user_runs,
+                               selected_user_runs=selected_user_runs, selected_date=selected_date, len=len,
+                               avg_function=avg_function, sum_function=sum_function, the_user_run=the_user_run,
+                               the_selected_user_run=the_selected_user_run)
 
 
 @app.route('/runs_archive')
@@ -252,10 +283,21 @@ def day_display():
 
     user_sleep = user_sleeps[0] if num_sleeps > 0 else None
 
+    api_url = "https://zenquotes.io/api/random"
+    response = requests.get(api_url)
+
+    if response.status_code == 200:
+        quote_data = response.json()[0]
+        quote = quote_data['q']
+        author = quote_data['a']
+        todaysQuote = f'"{quote}" - {author}'
+    else:
+        return "Failed to fetch a quote"
+
     return render_template('day_display.html', title='Day Display', user_sleep=user_sleep, time=time,
                            distance=distance, avg_pace=avg_pace, effort=effort, temp=temp, time_of_day=time_of_day,
                            notes=notes, score=score, num_sleeps=num_sleeps, num_runs=num_runs, user=current_user,
-                           datetime=datetime, sleep_trend=sleep_trend)
+                           datetime=datetime, sleep_trend=sleep_trend, quote=todaysQuote)
 
 
 @app.route('/run_display/<run_id>')
