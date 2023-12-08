@@ -77,7 +77,7 @@ class RunForm(FlaskForm):
         self._validate_duration(field)
 
     def _validate_duration(self, field):
-        if self.hours.data == self.minutes.data == self.seconds.data == 0:
+        if self.hours.data == 0 and self.minutes.data == 0 and self.seconds.data == 0:
             raise ValidationError('At least one of hours, minutes, or seconds must be greater than 0.')
 
 

@@ -80,11 +80,14 @@ def reset_db():
 def register_run():
     if not current_user.is_authenticated:
         return redirect(url_for('main'))
-    form = RunForm()
-    form.hours.data = 0
-    form.minutes.data = 0
-    form.seconds.data = 0
 
+    form = RunForm()
+    if form.hours.data == None:
+        form.hours.data = 0
+    if form.minutes.data == None:
+        form.minutes.data = 0
+    if form.seconds.data == None:
+        form.seconds.data = 0
     if form.validate_on_submit():
         hours = form.hours.data or 0
         minutes = form.minutes.data or 0
@@ -183,6 +186,8 @@ def compare():
     if request.method == 'POST':
         if 'submit_user' in request.form:
             selected_user_id = request.form.get('selected_user')
+            if selected_user_id == 'none_selected':
+                return redirect(url_for('compare'))
             selected_user = User.query.get(selected_user_id)
             selected_user_runs = Run.query.filter_by(user_id=selected_user.id).all()
             common_dates = []
