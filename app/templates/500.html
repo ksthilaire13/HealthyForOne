@@ -6,6 +6,6 @@
     {% if current_user.is_anonymous %}
         <p><a href="{{ url_for('main') }}">Back</a></p>
     {% else %}
-        <p><a href="{{ url_for('day_display') }}">Home</a></p>
+        <p><a href="{{ url_for('day_display') }}" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-home"></span></a>/p>
     {% endif %}
 {% endblock %}

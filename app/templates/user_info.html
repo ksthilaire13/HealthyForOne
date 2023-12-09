@@ -1,26 +1,67 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h3> Username: {{ user.username }}</h3>
-        <textarea class="form-control" id="textAreaExample1" rows="4"></textarea>
-        <label class="form-label" for="textAreaExample">Edit Username</label>
-    <h3> Email: {{ user.email }}</h3>
-        <textarea class="form-control" id="textAreaExample1" rows="4"></textarea>
-        <label class="form-label" for="textAreaExample">Change Email</label>
-    <h3> Name: {{ user.name }}</h3>
-    <h3> date_registered: {{ user.date_registered }}</h3>
-    <h3> Bio: {{ user.bio }}</h3>
-        <textarea class="form-control" id="textAreaExample1" rows="4"></textarea>
-        <label class="form-label" for="textAreaExample">Edit Bio</label>
-    <br>
-    <div class="col-md-12 text-center mt-5">
-    <h3> Total Miles: {{ total_miles }}</h3>
-    <h3> Total Time: {{ total_time }}</h3>
-    <h3> Avg Pace Overall: {{ overall_avg_pace }}</h3>
-    <h3> Total Sleep Time: {{ total_sleep_time }}</h3>
-    <h3> Run Score Overall: {{ avg_run_score }}</h3>
-    <h3> Sleep Score Overall: {{ avg_sleep_score }}</h3>
-    <br>
+    <style>
+        /* CSS for positioning the label over the textarea */
+        .textarea-container {
+            position: relative;
+        }
+
+        label {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            pointer-events: none; /* Allow clicking through the label to the textarea */
+            color: #888; /* Optional: Set label color */
+            transition: opacity 0.3s ease-in-out; /* Add transition for smooth visibility change */
+        }
+
+        textarea {
+            padding: 25px; /* Adjust padding to accommodate label */
+            margin-top: 10px; /* Add some margin for spacing */
+        }
+    </style>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Username: {{ user.username }}</h3>
+                <h3>Email: {{ user.email }}</h3>
+                <h3>Name: {{ user.name }}</h3>
+                <h3>Date Registered: {{ user.date_registered }}</h3>
+                <h3>Bio:</h3>
+                <p>{{ user.bio }}</p>
+                <form method="post">
+                    <div class="textarea-container">
+                        <label for="user_input" contenteditable="true" onclick="hideLabel(this)">Edit bio</label>
+                        <textarea name="user_input" id="user_input" rows="4" class="form-control" oninput="updateLabel(this)"></textarea>
+                    </div>
+                    <br>
+                    <input type="submit" class="btn btn-primary" value="Submit">
+                </form>
+            </div>
+            <div class="col-md-6 text-center">
+                <h3>Total Miles: {{ total_miles }}</h3>
+                <h3>Total Time: {{ total_time }}</h3>
+                <h3>Avg Pace Overall: {{ overall_avg_pace }}</h3>
+                <h3>Total Sleep Time: {{ total_sleep_time }}</h3>
+                <h3>Run Score Overall: {{ avg_run_score }}</h3>
+                <h3>Sleep Score Overall: {{ avg_sleep_score }}</h3>
+
+                <!-- Move the link below the running stats -->
+                <a href="{{ url_for('day_display') }}" class="btn btn-primary mt-3">Go to Day Display</a>
+            </div>
+        </div>
     </div>
-    <h3><a href="{{ url_for('day_display') }}">Home</a></h3>
+
+    <script>
+        function hideLabel(label) {
+            label.style.opacity = 0;
+        }
+
+        function updateLabel(input) {
+            const label = document.querySelector('label[for="user_input"]');
+            label.style.opacity = input.value.trim() === '' ? 1 : 0;
+        }
+    </script>
 {% endblock %}

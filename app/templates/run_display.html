@@ -1,17 +1,41 @@
 {% extends "base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
-    {% block app_content %}
-        <h1>Run Score: {{ score }}</h1>
-        <h2>{{ run.date }}</h2>
-        <h3> Distance: {{ run.distance }}</h3>
-        <h3> Duration: {{ run.duration }}</h3>
-        <h3> Avg Pace: {{ pace }}</h3>
-        <h3> Logged Effort: {{ run.effort }}</h3>
-        <h3> Temperature: {{ run.temp }}</h3>
-        <h3> Time of Day: {{ run.time_of_day }}</h3>
-        <h3> Weather: {{ run.weather }}</h3>
-        <h3> Notes: {{ run.notes }}</h3>
-        <h3>Sleep Recommendation: {{ rec }}</h3>
-        <br>
-        <h3><a href="{{ url_for('day_display') }}">Home</a></h3>
-    {% endblock %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <h1 class="text-center mb-4">Run Score: {{ score }}</h1>
+                <h2 class="text-center">{{ run.date }}</h2>
+                <hr>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3>Distance:</h3>
+                        <p>{{ run.distance }}</p>
+                        <h3>Duration:</h3>
+                        <p>{{ run.duration }}</p>
+                        <h3>Avg Pace:</h3>
+                        <p>{{ pace }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h3>Logged Effort:</h3>
+                        <p>{{ run.effort }}</p>
+                        <h3>Temperature:</h3>
+                        <p>{{ run.temp }}</p>
+                        <h3>Time of Day:</h3>
+                        <p>{{ run.time_of_day }}</p>
+                        <h3>Weather:</h3>
+                        <p>{{ run.weather }}</p>
+                    </div>
+                </div>
+                <hr>
+                <h3>Notes:</h3>
+                <p>{{ run.notes }}</p>
+                <br>
+                <div class="text-center">
+                    <a href="{{ url_for('day_display') }}" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-home"></span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -296,11 +296,15 @@ def sleep_display(sleep_id):
                            duration=duration, suggestion=suggestion)
 
 
-@app.route('/user_info')
+@app.route('/user_info',methods=['GET', 'POST'])
 @login_required
 def user_info():
     if not current_user.is_authenticated:
         return redirect(url_for('main'))
+    if request.method == 'POST':
+        user_input = request.form['user_input']
+        current_user.bio = user_input
+        db.session.commit()
     user_runs = Run.query.filter_by(user_id=current_user.id).all()
     user_sleeps = Sleep.query.filter_by(user_id=current_user.id).all()
     total_miles = sum_function(user_runs, "distance", current_user)
