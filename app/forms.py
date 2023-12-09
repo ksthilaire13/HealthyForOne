@@ -1,7 +1,7 @@
 from datetime import timedelta, datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, IntegerField, SelectField, \
-    DateField, SelectMultipleField, DateTimeField, FloatField, TimeField
+    DateField, SelectMultipleField, DateTimeField, FloatField, TimeField, validators
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, NumberRange, Length
 from app.models import User, Run, Sleep
 
@@ -32,21 +32,33 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Please use a different email address.')
 
 
+class EditUserForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    name = StringField('Name')
+    bio = TextAreaField('bio')
+    submit = SubmitField('Save Changes', validators=[Length(max=500)])
+
+
 class RunForm(FlaskForm):
     date = DateField('Date', validators=[DataRequired()], format='%Y-%m-%d')
-    distance = FloatField('Distance (in miles)', validators=[DataRequired(), NumberRange(min=0)])
-    hours = IntegerField('Hours', validators=[DataRequired(), NumberRange(min=0)])
-    minutes = IntegerField('Minutes', validators=[DataRequired(), NumberRange(min=0, max=59)])
-    seconds = IntegerField('Seconds', validators=[DataRequired(), NumberRange(min=0, max=59)])
+    distance = FloatField('Distance (in miles)', validators=[DataRequired(), NumberRange(min=0.01)])
+    hours = IntegerField('Hours', validators=[validators.NumberRange(min=0)])
+    minutes = IntegerField('Minutes', validators=[validators.NumberRange(min=0)])
+    seconds = IntegerField('Seconds', validators=[validators.NumberRange(min=0)])
     temperature = IntegerField('Temperature', validators=[NumberRange(min=-100, max=130)])
     time_of_day = TimeField('Time of Day', validators=[DataRequired()])
     effort = IntegerField('Effort (1-10)', validators=[NumberRange(min=1, max=10), DataRequired()])
     weather = SelectField('Weather', choices=[('sunny', 'Sunny'), ('cloudy', 'Cloudy'), ('rainy', 'Rainy')])
-    notes = TextAreaField('Notes', validators=[Length(max=200)])
+    notes = TextAreaField('Notes', validators=[Length(max=500)])
 
     def validate_date(self, field):
         if field.data > datetime.now().date():
             raise ValidationError('Date cannot be in the future.')
+
+    def validate_distance(self, field):
+        if field.data == 0:
+            raise ValidationError('Distance cannot be 0')
 
     def validate_time_of_day(self, field):
         entered_date = self.date.data
@@ -54,6 +66,19 @@ class RunForm(FlaskForm):
         entered_time = field.data
         if entered_date == current_date and entered_time >= datetime.now().time():
             raise ValidationError('Time of day cannot be in the future.')
+
+    def validate_hours(self, field):
+        self._validate_duration(field)
+
+    def validate_minutes(self, field):
+        self._validate_duration(field)
+
+    def validate_seconds(self, field):
+        self._validate_duration(field)
+
+    def _validate_duration(self, field):
+        if self.hours.data == 0 and self.minutes.data == 0 and self.seconds.data == 0:
+            raise ValidationError('At least one of hours, minutes, or seconds must be greater than 0.')
 
 
 class SleepForm(FlaskForm):

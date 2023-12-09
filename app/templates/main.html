@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
     {% block app_content %}
+        <div class="col-md-12 text-center mt-5">
         <h1>Welcome to HealthyForOne!</h1>
         <h2><a href="{{ url_for('login') }}">Login as a Current User</a>   OR
         <a href="{{ url_for('register') }}">Register as a New User</a></h2>
+        </div>
     {% endblock %}

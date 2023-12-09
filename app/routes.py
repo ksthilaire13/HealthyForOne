@@ -2,7 +2,7 @@ from datetime import timedelta, datetime
 from sqlalchemy import func
 from app import app, db
 from flask import render_template, redirect, url_for, flash, request, jsonify, render_template_string
-from app.forms import LoginForm, RegistrationForm, SleepForm, RunForm
+from app.forms import LoginForm, RegistrationForm, SleepForm, RunForm, EditUserForm
 from flask_login import login_user, logout_user, current_user, login_required
 from app.models import User, Run, Sleep
 from app.reset import reset_data
@@ -80,12 +80,37 @@ def reset_db():
 def register_run():
     if not current_user.is_authenticated:
         return redirect(url_for('main'))
+
     form = RunForm()
+    if form.hours.data == None:
+        form.hours.data = 0
+    if form.minutes.data == None:
+        form.minutes.data = 0
+    if form.seconds.data == None:
+        form.seconds.data = 0
     if form.validate_on_submit():
+        hours = form.hours.data or 0
+        minutes = form.minutes.data or 0
+        seconds = form.seconds.data or 0
+        if hours != 0 and minutes != 0 and seconds != 0:
+            duration_calc = timedelta(hours=form.hours.data, minutes=form.minutes.data, seconds=form.seconds.data)
+        elif form.hours.data != 0 and form.minutes.data != 0 and form.seconds.data == 0:
+            duration_calc = timedelta(hours=form.hours.data, minutes=form.minutes.data)
+        elif form.hours.data != 0 and form.minutes.data == 0 and form.seconds.data != 0:
+            duration_calc = timedelta(minutes=form.hours.data, seconds=form.seconds.data)
+        elif form.hours.data != 0 and form.minutes.data == 0 and form.seconds.data == 0:
+            duration_calc = timedelta(hours=form.hours.data)
+        elif form.hours.data == 0 and form.minutes.data != 0 and form.seconds.data == 0:
+            duration_calc = timedelta(minutes=form.minutes.data)
+        elif form.hours.data == 0 and form.minutes.data == 0 and form.seconds.data != 0:
+            duration_calc = timedelta(seconds=form.seconds.data)
+        else:
+            duration_calc = timedelta(0)
+
         run = Run(
             date=form.date.data,
             distance=form.distance.data,
-            duration=timedelta(hours=form.hours.data, minutes=form.minutes.data, seconds=form.seconds.data),
+            duration=duration_calc,
             temp=form.temperature.data,
             time_of_day=form.time_of_day.data,
             effort=form.effort.data,
@@ -148,7 +173,7 @@ def compare():
     user_runs = Run.query.filter_by(user_id=current_user.id).all()
     other_users = User.query.filter(User.username != user.username).all()
     selected_user = None
-    selected_date = 'overall'
+    selected_date = None
     selected_user_runs = None
     common_dates = []
     user_dates = []
@@ -160,9 +185,9 @@ def compare():
 
     if request.method == 'POST':
         if 'submit_user' in request.form:
-            # Handle user comparison
-            print("made it here 3")
             selected_user_id = request.form.get('selected_user')
+            if selected_user_id == 'none_selected':
+                return redirect(url_for('compare'))
             selected_user = User.query.get(selected_user_id)
             selected_user_runs = Run.query.filter_by(user_id=selected_user.id).all()
             common_dates = []
@@ -176,29 +201,34 @@ def compare():
 
         if 'submit_date' in request.form:
             selected_date = request.form.get('selected_date')
-            print("Selected Date:", selected_date)
 
     return render_template('compare.html', user=user, other_users=other_users, selected_user=selected_user,
                            common_dates=common_dates, selected_date=selected_date, user_runs=user_runs,
                            selected_user_runs=selected_user_runs, user_dates=user_dates, len=len,
-                           selected_user_dates=selected_user_dates, avg_function=avg_function, sum_function=sum_function)
+                           selected_user_dates=selected_user_dates, avg_function=avg_function,
+                           sum_function=sum_function)
 
 
 @app.route('/update_content', methods=['POST'])
 def update_content():
     selected_date = request.form.get('selected_date')
-    compare_dates = "dates compare"
-    compare_overall = "compare overall"
-    # with open('/app/templates/base.html', 'r') as file:
-    #     html_content = file.read()
-    #     print(html_content)
+    selected_user_id = request.form.get('selected_user')
+    user = current_user
+    selected_user = User.query.filter_by(id=selected_user_id).first()
+    user_runs = Run.query.filter_by(user_id=current_user.id).all()
+    selected_user_runs = Run.query.filter_by(user_id=selected_user_id).all()
+    the_user_run = Run.query.filter_by(user_id=user.id, date=selected_date).all()
+    the_selected_user_run = Run.query.filter_by(user_id=selected_user.id, date=selected_date).all()
 
     if selected_date == 'overall':
-        print("overall stats tempy")
-        return jsonify({"content": compare_overall})
+        return render_template('overall_stats.html', user=user, selected_user=selected_user, user_runs=user_runs,
+                               selected_user_runs=selected_user_runs, len=len, avg_function=avg_function,
+                               sum_function=sum_function)
     else:
-        print("specic stat sempy")
-        return jsonify({"content": compare_dates})
+        return render_template('specific_date_stats.html', user=user, selected_user=selected_user, user_runs=user_runs,
+                               selected_user_runs=selected_user_runs, selected_date=selected_date, len=len,
+                               avg_function=avg_function, sum_function=sum_function, the_user_run=the_user_run,
+                               the_selected_user_run=the_selected_user_run)
 
 
 @app.route('/runs_archive')
@@ -307,12 +337,55 @@ def user_info():
         db.session.commit()
     user_runs = Run.query.filter_by(user_id=current_user.id).all()
     user_sleeps = Sleep.query.filter_by(user_id=current_user.id).all()
-    total_miles = sum_function(user_runs, "distance", current_user)
-    total_time = sum_function(user_runs, "duration", current_user)
-    overall_avg_pace = avg_function(user_runs, "pace", current_user)
-    total_sleep_time = sum_function(user_sleeps, "sleep_duration", current_user)
+    if len(user_runs) > 0:
+        total_miles = sum_function(user_runs, "distance", current_user)
+        total_time = sum_function(user_runs, "duration", current_user)
+        overall_avg_pace = avg_function(user_runs, "pace", current_user)
+    else:
+        total_miles = "none"
+        total_time = "none"
+        overall_avg_pace = "none"
+    if len(user_sleeps) > 0:
+        total_sleep_time = sum_function(user_sleeps, "sleep_duration", current_user)
     avg_run_score = avg_function(user_runs, "run_score", current_user)
     avg_sleep_score = avg_function(user_sleeps, "sleep_score", current_user)
     return render_template('user_info.html', user=current_user, total_miles=total_miles,
                            total_time=total_time, overall_avg_pace=overall_avg_pace, total_sleep_time=total_sleep_time,
                            avg_run_score=avg_run_score, avg_sleep_score=avg_sleep_score)
+
+
+@app.route('/edit_user', methods=['GET', 'POST'])
+@login_required
+def edit_user():
+    if not current_user.is_authenticated:
+        return redirect(url_for('main'))
+
+    form = EditUserForm()
+
+    if form.validate_on_submit():
+        existing_email_user = User.query.filter(User.email == form.email.data, User.id != current_user.id).first()
+        if existing_email_user:
+            flash('Email is already in use. Please choose a different one.', 'error')
+        else:
+            existing_username_user = User.query.filter(User.username == form.username.data, User.id != current_user.id).first()
+            if existing_username_user:
+                flash('Username is already in use. Please choose a different one.', 'error')
+            else:
+                current_user.username = form.username.data
+                current_user.email = form.email.data
+                current_user.name = form.name.data
+                current_user.bio = form.bio.data
+                db.session.commit()
+
+                return redirect(url_for('user_info'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+        form.name.data = current_user.name
+        form.bio.data = current_user.bio
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f'{field.capitalize()}: {error}', 'error')
+
+    return render_template('user_edit.html', form=form)
