@@ -329,6 +329,7 @@ def sleep_display(sleep_id):
 @app.route('/user_info',methods=['GET', 'POST'])
 @login_required
 def user_info():
+    global total_sleep_time
     if not current_user.is_authenticated:
         return redirect(url_for('main'))
     if request.method == 'POST':
@@ -345,6 +346,7 @@ def user_info():
         total_miles = "none"
         total_time = "none"
         overall_avg_pace = "none"
+    total_sleep_time = 0
     if len(user_sleeps) > 0:
         total_sleep_time = sum_function(user_sleeps, "sleep_duration", current_user)
     avg_run_score = avg_function(user_runs, "run_score", current_user)

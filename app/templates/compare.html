@@ -81,6 +81,10 @@
             </div>
         {% endif %}
 
+        {% if selected_date %}
+            <h4>Comparison for: {{ selected_date }}</h4>
+        {% endif %}
+
         <div id="runs-data">
             {% if selected_date == 'overall' %}
                 <h4>Overall Stats:</h4>
